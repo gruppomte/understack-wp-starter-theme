@@ -1,0 +1,17 @@
+/* Design tokens. Neutral by design: adjust per project. */
+@theme {
+  --font-sans: ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+
+  --color-ink: oklch(21% 0.01 260);
+  --color-ink-muted: oklch(50% 0.012 260);
+  --color-surface: oklch(100% 0 0);
+  --color-surface-muted: oklch(97% 0.004 260);
+  --color-line: oklch(90% 0.006 260);
+  --color-accent: oklch(30% 0.02 260);
+  --color-accent-contrast: oklch(100% 0 0);
+
+  --container-page: 80rem;
+
+  --text-display: clamp(2rem, 1.4rem + 2.5vw, 3.25rem);
+  --text-display--line-height: 1.1;
+}

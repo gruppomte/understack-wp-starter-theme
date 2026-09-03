@@ -1,0 +1,60 @@
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scrollbar-gutter: stable;
+
+    @media (prefers-reduced-motion: reduce) {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    @apply flex min-h-dvh flex-col bg-surface font-sans text-ink antialiased;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-accent;
+  }
+
+  :target {
+    scroll-margin-top: 2rem;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  img,
+  video {
+    @apply h-auto max-w-full;
+  }
+
+  a {
+    text-underline-offset: 0.2em;
+  }
+
+  /* Alpine hides elements marked with x-cloak until it has initialised. */
+  [x-cloak] {
+    display: none !important;
+  }
+
+  /*
+   * Elements revealed by the animation module start hidden only when JavaScript
+   * runs and the visitor allows motion (the "motion" class is set before first paint).
+   */
+  .motion [data-animate],
+  .motion [data-animate-stagger] > *,
+  .motion [data-hero-item] {
+    opacity: 0;
+  }
+
+  .site-main {
+    container-type: inline-size;
+  }
+
+  body:has(dialog[data-modal][open]) {
+    overflow: hidden;
+  }
+}

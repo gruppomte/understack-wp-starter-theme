@@ -1,0 +1,18 @@
+{#
+  Accordion built on details/summary: accessible and functional without JavaScript.
+  Parameters: items (list of { title, content }), name (set to make items exclusive).
+#}
+<div class="accordion divide-y divide-line border-y border-line">
+  {% for item in items %}
+    <details class="group"{% if name %} name="{{ name|esc_attr }}"{% endif %}>
+      <summary class="flex cursor-pointer list-none items-center justify-between gap-4 py-4 font-medium">
+        <span>{{ item.title|e }}</span>
+        {% include 'components/icon.twig' with {
+          name: 'chevron-down',
+          class: 'size-5 transition-transform group-open:rotate-180 motion-reduce:transition-none'
+        } only %}
+      </summary>
+      <div class="content pb-4 text-ink-muted">{{ item.content }}</div>
+    </details>
+  {% endfor %}
+</div>

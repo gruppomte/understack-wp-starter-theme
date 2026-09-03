@@ -1,0 +1,11 @@
+{#
+  Button or link styled as a button.
+  Parameters: label (text), url (renders <a>), type (button type when no url),
+  variant ('primary' | 'secondary'), target ('_blank' opens a new tab), class.
+#}
+{% set classes = ['btn', variant|default('primary') == 'secondary' ? 'btn-secondary' : 'btn-primary', class|default('')]|join(' ')|trim %}
+{% if url %}
+  <a class="{{ classes }}" href="{{ url|esc_url }}"{% if target == '_blank' %} target="_blank" rel="noopener"{% endif %}>{{ label|e }}{% if target == '_blank' %} <span class="sr-only">{{ __('(opens in a new tab)', 'understack-wp-starter') }}</span>{% endif %}</a>
+{% else %}
+  <button type="{{ type|default('button')|esc_attr }}" class="{{ classes }}">{{ label|e }}</button>
+{% endif %}

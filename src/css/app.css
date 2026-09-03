@@ -1,0 +1,11 @@
+@import 'tailwindcss';
+
+@source "../../views";
+@source "../../app";
+
+@import './theme.css';
+@import './base.css';
+@import './components.css';
+@import './content.css' layer(components);
+@import './wordpress.css';
+@import './navigation.css';

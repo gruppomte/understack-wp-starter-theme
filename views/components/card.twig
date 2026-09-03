@@ -1,0 +1,18 @@
+{# Post card for listings. Parameters: post (Timber\Post). #}
+<article class="flex flex-col gap-4">
+  {% if post.thumbnail %}
+    <a href="{{ post.link|esc_url }}" tabindex="-1" aria-hidden="true">
+      {% include 'components/image.twig' with {
+        image: post.thumbnail,
+        size: 'card',
+        class: 'aspect-3/2 w-full rounded-md object-cover',
+        sizes: '(min-width: 64rem) 25rem, (min-width: 40rem) 50vw, 100vw'
+      } only %}
+    </a>
+  {% endif %}
+  <div>
+    <h2 class="text-xl font-semibold"><a class="hover:underline" href="{{ post.link|esc_url }}">{{ post.title }}</a></h2>
+    <div class="mt-2">{% include 'partials/post-meta.twig' with { post: post, compact: true } only %}</div>
+    <div class="mt-3 text-ink-muted">{{ post.excerpt({ words: 30, read_more: false }) }}</div>
+  </div>
+</article>

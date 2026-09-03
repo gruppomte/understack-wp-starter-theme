@@ -1,0 +1,40 @@
+{% set menu = menus.primary %}
+<header class="site-header border-b border-line bg-surface" data-navigation>
+  <div class="wrap flex flex-wrap items-center justify-between gap-x-6 gap-y-4 py-4">
+    {% include 'partials/branding.twig' %}
+
+    <div class="flex items-center gap-4 md:order-3">
+      {% if options.header_cta %}
+        <div class="hidden sm:block">
+          {% include 'components/button.twig' with {
+            label: options.header_cta.title,
+            url: options.header_cta.url,
+            target: options.header_cta.target
+          } only %}
+        </div>
+      {% endif %}
+
+      {% if menu %}
+        <button
+          type="button"
+          class="inline-flex size-10 items-center justify-center rounded-md border border-line md:hidden"
+          data-nav-toggle
+          aria-expanded="false"
+          aria-controls="primary-navigation"
+        >
+          <span class="sr-only">{{ __('Menu', 'understack-wp-starter') }}</span>
+          <span data-nav-icon="closed">{% include 'components/icon.twig' with { name: 'menu' } only %}</span>
+          <span data-nav-icon="open" class="hidden">{% include 'components/icon.twig' with { name: 'close' } only %}</span>
+        </button>
+      {% endif %}
+    </div>
+
+    {% if menu %}
+      {% include 'partials/navigation.twig' with {
+        menu: menu,
+        id: 'primary-navigation',
+        label: __('Primary', 'understack-wp-starter')
+      } only %}
+    {% endif %}
+  </div>
+</header>

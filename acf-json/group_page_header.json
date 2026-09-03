@@ -1,0 +1,65 @@
+{
+    "key": "group_68b8f0a1b2c50",
+    "title": "Page header",
+    "fields": [
+        {
+            "key": "field_68b8f0a1b2c51",
+            "label": "Lead",
+            "name": "page_lead",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "Short introduction shown under the page title.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": 240,
+            "rows": 3,
+            "placeholder": "",
+            "new_lines": ""
+        },
+        {
+            "key": "field_68b8f0a1b2c52",
+            "label": "Hide title",
+            "name": "page_hide_title",
+            "aria-label": "",
+            "type": "true_false",
+            "instructions": "The title stays available to assistive technology and search engines.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "Hide the page title visually",
+            "default_value": 0,
+            "ui": 1,
+            "ui_on_text": "",
+            "ui_off_text": ""
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "page"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "side",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "show_in_rest": 0,
+    "modified": 1756900000
+}

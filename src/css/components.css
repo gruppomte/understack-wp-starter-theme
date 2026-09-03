@@ -1,0 +1,49 @@
+@layer components {
+  .wrap {
+    @apply mx-auto w-full max-w-page px-4 sm:px-6 lg:px-8;
+  }
+
+  .skip-link {
+    @apply sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-md focus:bg-surface focus:px-4 focus:py-2 focus:shadow-md;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-md border px-4 py-2 text-sm font-medium transition-colors motion-reduce:transition-none;
+  }
+
+  .btn-primary {
+    @apply border-accent bg-accent text-accent-contrast hover:border-ink hover:bg-ink;
+  }
+
+  .btn-secondary {
+    @apply border-line bg-surface text-ink hover:bg-surface-muted;
+  }
+
+  .modal {
+    @apply m-auto w-[min(100%-2rem,32rem)] rounded-lg bg-surface p-0 text-ink shadow-xl;
+  }
+
+  .modal::backdrop {
+    background: rgb(0 0 0 / 0.5);
+  }
+
+  .modal-panel {
+    @apply p-6;
+  }
+
+  .comments-pagination {
+    @apply flex flex-wrap gap-2;
+  }
+
+  .comments-pagination .page-numbers {
+    @apply inline-flex min-w-9 items-center justify-center rounded-md border border-line px-3 py-1.5 text-sm;
+  }
+
+  .comments-pagination .page-numbers.current {
+    @apply border-accent bg-accent text-accent-contrast;
+  }
+
+  .comments-pagination .page-numbers.dots {
+    @apply border-transparent;
+  }
+}

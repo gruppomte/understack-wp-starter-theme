@@ -1,0 +1,28 @@
+{#
+  Comment thread and form. Parameters: post, comments (current page of the
+  thread, defaults to all comments), comments_pagination (HTML, optional).
+#}
+{% set thread = comments ?? post.comments %}
+{% if post.comment_status == 'open' or post.comment_count > 0 %}
+  <section id="comments" class="wrap mt-16">
+    <div class="mx-auto max-w-3xl">
+      {% if post.comment_count > 0 %}
+        <h2 class="text-xl font-semibold">
+          {{ _n('%s comment', '%s comments', post.comment_count, 'understack-wp-starter')|format(post.comment_count) }}
+        </h2>
+        <ol class="mt-6 space-y-6">
+          {% for comment in thread %}
+            {% include 'partials/comment.twig' with { comment: comment } only %}
+          {% endfor %}
+        </ol>
+        {% if comments_pagination %}
+          <nav class="comments-pagination mt-8" aria-label="{{ __('Comments pagination', 'understack-wp-starter')|esc_attr }}">
+            {{ comments_pagination }}
+          </nav>
+        {% endif %}
+      {% endif %}
+
+      {{ function('comment_form') }}
+    </div>
+  </section>
+{% endif %}

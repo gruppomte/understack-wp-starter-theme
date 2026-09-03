@@ -1,0 +1,17 @@
+{% extends 'layouts/base.twig' %}
+
+{% block content %}
+  {% include 'sections/page-header.twig' with { title: __('Page not found', 'understack-wp-starter') } only %}
+
+  <div class="wrap pb-16">
+    <div class="max-w-xl space-y-6">
+      <p class="text-ink-muted">{{ __('The page you are looking for does not exist or has been moved.', 'understack-wp-starter') }}</p>
+      {% include 'partials/search-form.twig' with { id: 'not-found' } %}
+      {% include 'components/button.twig' with {
+        label: __('Back to the homepage', 'understack-wp-starter'),
+        url: site.link,
+        variant: 'secondary'
+      } only %}
+    </div>
+  </div>
+{% endblock %}

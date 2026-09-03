@@ -1,0 +1,23 @@
+<li id="comment-{{ comment.ID }}" class="comment">
+  <article class="flex gap-4">
+    {% if comment.avatar(40) %}
+      <img class="size-10 shrink-0 rounded-full" src="{{ comment.avatar(40)|esc_url }}" alt="" width="40" height="40" loading="lazy" decoding="async">
+    {% endif %}
+    <div class="min-w-0 flex-1">
+      <p class="text-sm">
+        <span class="font-medium">{{ comment.author.name }}</span>
+        <time class="text-ink-muted" datetime="{{ comment.date('c') }}">{{ comment.date }}</time>
+      </p>
+      <div class="content mt-2 text-sm">{{ comment.content }}</div>
+      <p class="mt-2 text-sm">{{ comment.reply_link(__('Reply', 'understack-wp-starter')) }}</p>
+    </div>
+  </article>
+
+  {% if comment.children %}
+    <ol class="mt-6 space-y-6 pl-8 sm:pl-14">
+      {% for child in comment.children %}
+        {% include 'partials/comment.twig' with { comment: child } only %}
+      {% endfor %}
+    </ol>
+  {% endif %}
+</li>

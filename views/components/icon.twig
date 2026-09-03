@@ -1,0 +1,15 @@
+{#
+  Inline SVG icon from components/icons/{name}.twig.
+  Decorative by default; pass a label to make it meaningful for assistive technology.
+#}
+{% set path = 'components/icons/' ~ name ~ '.twig' %}
+<svg
+  class="icon shrink-0 {{ class|default('size-5') }}"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  {% if label %} role="img" aria-label="{{ label|esc_attr }}"{% else %} aria-hidden="true" focusable="false"{% endif %}
+>{% include path ignore missing %}</svg>

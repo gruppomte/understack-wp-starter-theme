@@ -1,0 +1,20 @@
+/*
+ * Navigation without JavaScript: panels stay visible and the toggles disappear.
+ * Kept outside the cascade layers so it wins over the "hidden" utility.
+ */
+html:not(.js) .site-nav,
+html:not(.js) [data-submenu-panel] {
+  display: block;
+  position: static;
+}
+
+html:not(.js) [data-nav-toggle],
+html:not(.js) [data-submenu-toggle] {
+  display: none;
+}
+
+@layer components {
+  [data-submenu-toggle][aria-expanded='true'] .icon {
+    rotate: 180deg;
+  }
+}

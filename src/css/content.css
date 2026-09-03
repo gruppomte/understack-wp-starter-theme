@@ -1,0 +1,85 @@
+/*
+ * Editor content typography, shared by the front end (.content) and the block
+ * editor (.editor-styles-wrapper, which WordPress leaves unprefixed).
+ */
+.content,
+.editor-styles-wrapper {
+  @apply leading-relaxed;
+
+  & > * + * {
+    @apply mt-5;
+  }
+
+  & h1 {
+    @apply mt-10 text-3xl font-semibold tracking-tight;
+  }
+
+  & h2 {
+    @apply mt-10 text-2xl font-semibold tracking-tight;
+  }
+
+  & h3 {
+    @apply mt-8 text-xl font-semibold;
+  }
+
+  & h4 {
+    @apply mt-6 text-lg font-semibold;
+  }
+
+  & a {
+    @apply underline;
+  }
+
+  & ul {
+    @apply list-disc pl-6;
+  }
+
+  & ol {
+    @apply list-decimal pl-6;
+  }
+
+  & li + li {
+    @apply mt-2;
+  }
+
+  & blockquote {
+    @apply border-l-2 border-line pl-4 text-ink-muted;
+  }
+
+  & pre {
+    @apply overflow-x-auto rounded-md bg-surface-muted p-4 text-sm;
+  }
+
+  & code {
+    @apply rounded bg-surface-muted px-1 py-0.5 text-[0.9em];
+  }
+
+  & pre code {
+    @apply bg-transparent p-0;
+  }
+
+  & hr {
+    @apply my-10 border-line;
+  }
+
+  & table {
+    @apply w-full border-collapse text-left text-sm;
+  }
+
+  & th,
+  & td {
+    @apply border-b border-line px-3 py-2 align-top;
+  }
+
+  & figure {
+    @apply my-8;
+  }
+
+  & figcaption {
+    @apply mt-2 text-sm text-ink-muted;
+  }
+
+  & iframe {
+    @apply max-w-full;
+  }
+}

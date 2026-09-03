@@ -1,0 +1,56 @@
+{#
+  Primary navigation. Supports one level of sub-menus rendered as disclosure
+  buttons (keyboard and touch friendly). Behaviour lives in src/js/modules/navigation.js;
+  without JavaScript every panel is visible and the toggles are hidden.
+#}
+<nav id="{{ id }}" class="site-nav hidden w-full md:order-2 md:block md:w-auto" aria-label="{{ label|esc_attr }}">
+  <ul class="flex flex-col gap-1 py-2 md:flex-row md:items-center md:gap-6 md:py-0">
+    {% for item in menu.items %}
+      <li class="relative {{ item.classes|join(' ')|esc_attr }}">
+        <div class="flex items-center justify-between gap-1">
+          <a
+            class="block py-2 hover:underline"
+            href="{{ item.link|esc_url }}"
+            {% if item.target == '_blank' %} target="_blank" rel="noopener"{% endif %}
+            {% if item.current %} aria-current="page"{% endif %}
+          >{{ item.title }}</a>
+
+          {% if item.children %}
+            <button
+              type="button"
+              class="inline-flex size-8 items-center justify-center rounded-md"
+              data-submenu-toggle
+              aria-expanded="false"
+              aria-controls="submenu-{{ item.ID }}"
+            >
+              <span class="sr-only">{{ __('Submenu: %s', 'understack-wp-starter')|format(item.title|striptags) }}</span>
+              {% include 'components/icon.twig' with {
+                name: 'chevron-down',
+                class: 'size-4 transition-transform motion-reduce:transition-none'
+              } only %}
+            </button>
+          {% endif %}
+        </div>
+
+        {% if item.children %}
+          <ul
+            id="submenu-{{ item.ID }}"
+            class="hidden space-y-1 pl-4 md:absolute md:top-full md:left-0 md:z-20 md:min-w-48 md:rounded-md md:border md:border-line md:bg-surface md:p-2 md:pl-2"
+            data-submenu-panel
+          >
+            {% for child in item.children %}
+              <li class="{{ child.classes|join(' ')|esc_attr }}">
+                <a
+                  class="block px-2 py-2 hover:underline"
+                  href="{{ child.link|esc_url }}"
+                  {% if child.target == '_blank' %} target="_blank" rel="noopener"{% endif %}
+                  {% if child.current %} aria-current="page"{% endif %}
+                >{{ child.title }}</a>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+</nav>

@@ -1,0 +1,33 @@
+{
+    "name": "understack-wp-starter/theme",
+    "license": "proprietary",
+    "require": {
+        "php": ">=8.3",
+        "timber/timber": "^2.5"
+    },
+    "require-dev": {
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.1",
+        "squizlabs/php_codesniffer": "^3.13",
+        "wp-coding-standards/wpcs": "^3.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Understack\\": "app/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true,
+        "platform": {
+            "php": "8.3.0"
+        },
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    },
+    "scripts": {
+        "lint": "phpcs",
+        "lint:fix": "phpcbf",
+        "test": "php tests/smoke.php"
+    }
+}

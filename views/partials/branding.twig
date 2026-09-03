@@ -1,0 +1,7 @@
+<div class="site-branding md:order-1">
+  {% if function('has_custom_logo') %}
+    {{ function('get_custom_logo') }}
+  {% else %}
+    <a class="text-lg font-semibold tracking-tight" href="{{ site.link|esc_url }}" rel="home">{{ site.name }}</a>
+  {% endif %}
+</div>

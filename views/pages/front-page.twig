@@ -1,0 +1,15 @@
+{#
+  Static front page: the page content followed by the latest posts.
+  Rendered when a page is set as the front page in Settings > Reading.
+#}
+{% extends 'pages/page.twig' %}
+
+{% block page_after %}
+  {% if latest_posts|length > 0 %}
+    {% include 'sections/latest-posts.twig' with {
+      posts: latest_posts,
+      title: __('Latest posts', 'understack-wp-starter'),
+      link: posts_page_link
+    } only %}
+  {% endif %}
+{% endblock %}

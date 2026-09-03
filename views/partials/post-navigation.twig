@@ -1,0 +1,20 @@
+{% set previous = post.prev %}
+{% set following = post.next %}
+{% if previous or following %}
+  <nav class="wrap mt-16" aria-label="{{ __('Post navigation', 'understack-wp-starter')|esc_attr }}">
+    <div class="mx-auto grid max-w-3xl gap-6 border-t border-line pt-8 sm:grid-cols-2">
+      {% if previous %}
+        <a class="group" href="{{ previous.link|esc_url }}" rel="prev">
+          <span class="block text-sm text-ink-muted">{{ __('Previous', 'understack-wp-starter') }}</span>
+          <span class="font-medium group-hover:underline">{{ previous.title }}</span>
+        </a>
+      {% endif %}
+      {% if following %}
+        <a class="group sm:col-start-2 sm:text-right" href="{{ following.link|esc_url }}" rel="next">
+          <span class="block text-sm text-ink-muted">{{ __('Next', 'understack-wp-starter') }}</span>
+          <span class="font-medium group-hover:underline">{{ following.title }}</span>
+        </a>
+      {% endif %}
+    </div>
+  </nav>
+{% endif %}

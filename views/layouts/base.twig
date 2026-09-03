@@ -1,0 +1,27 @@
+<!doctype html>
+<html {{ site.language_attributes }}>
+<head>
+  <meta charset="{{ site.charset }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {{ function('wp_head') }}
+</head>
+<body class="{{ body_class }}">
+  {{ function('wp_body_open') }}
+
+  <a class="skip-link" href="#main-content">{{ __('Skip to content', 'understack-wp-starter') }}</a>
+
+  {% block header %}
+    {% include 'partials/header.twig' %}
+  {% endblock %}
+
+  <main id="main-content" class="site-main" tabindex="-1">
+    {% block content %}{% endblock %}
+  </main>
+
+  {% block footer %}
+    {% include 'partials/footer.twig' %}
+  {% endblock %}
+
+  {{ function('wp_footer') }}
+</body>
+</html>

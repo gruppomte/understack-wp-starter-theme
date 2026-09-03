@@ -1,0 +1,133 @@
+# Translation template for the Understack WP Starter theme.
+msgid ""
+msgstr ""
+"Project-Id-Version: Understack WP Starter 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-03T11:24:42+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"X-Domain: understack-wp-starter\n"
+
+#: app/ACF/OptionsPages.php:25
+#: app/ACF/OptionsPages.php:26
+msgid "Site Settings"
+msgstr ""
+
+#: app/Controllers/IndexController.php:16
+msgid "Latest posts"
+msgstr ""
+
+#. translators: %s: search query.
+#: app/Controllers/SearchController.php:14
+msgid "Search results for \"%s\""
+msgstr ""
+
+#: app/Core/Assets.php:94
+msgid "Compiled theme assets are missing. Run \"npm run build\" (or \"npm run dev\") inside the theme directory."
+msgstr ""
+
+#: app/Core/Setup.php:43
+msgid "Primary navigation"
+msgstr ""
+
+#: app/Core/Setup.php:44
+msgid "Footer navigation"
+msgstr ""
+
+#: functions.php:17
+msgid "Theme dependencies are missing. Run \"composer install\" inside the theme directory."
+msgstr ""
+
+#: index.php:14
+msgid "The theme could not start. Run \"composer install\" inside the theme directory."
+msgstr ""
+
+#: views/components/button.twig:8
+#: views/partials/footer.twig:26
+msgid "(opens in a new tab)"
+msgstr ""
+
+#: views/components/modal.twig:12
+msgid "Close"
+msgstr ""
+
+#: views/components/pagination.twig:17
+#: views/partials/post-navigation.twig:14
+msgid "Next"
+msgstr ""
+
+#: views/components/pagination.twig:2
+msgid "Pagination"
+msgstr ""
+
+#: views/components/pagination.twig:5
+#: views/partials/post-navigation.twig:8
+msgid "Previous"
+msgstr ""
+
+#: views/layouts/base.twig:11
+msgid "Skip to content"
+msgstr ""
+
+#: views/partials/comment.twig:12
+msgid "Reply"
+msgstr ""
+
+#: views/partials/comments.twig:6
+msgid "%s comment"
+msgid_plural "%s comments"
+msgstr[0] ""
+msgstr[1] ""
+
+#: views/partials/footer.twig:11
+msgid "Footer"
+msgstr ""
+
+#: views/partials/footer.twig:21
+msgid "Social profiles"
+msgstr ""
+
+#: views/partials/header.twig:25
+msgid "Menu"
+msgstr ""
+
+#: views/partials/header.twig:36
+msgid "Primary"
+msgstr ""
+
+#: views/partials/navigation.twig:26
+msgid "Submenu: %s"
+msgstr ""
+
+#: views/partials/post-navigation.twig:4
+msgid "Post navigation"
+msgstr ""
+
+#: views/partials/search-form.twig:3
+#: views/partials/search-form.twig:14
+msgid "Search"
+msgstr ""
+
+#: views/singles/single.twig:38
+msgid "Tags"
+msgstr ""
+
+#: views/system/404.twig:11
+msgid "Back to the homepage"
+msgstr ""
+
+#: views/system/404.twig:4
+msgid "Page not found"
+msgstr ""
+
+#: views/system/404.twig:8
+msgid "The page you are looking for does not exist or has been moved."
+msgstr ""
+
+#: views/system/no-content.twig:2
+msgid "Nothing was found."
+msgstr ""

@@ -1,0 +1,21 @@
+{% if pagination.pages|length > 1 %}
+  <nav class="mt-12 flex justify-center" aria-label="{{ __('Pagination', 'understack-wp-starter')|esc_attr }}">
+    <ul class="flex flex-wrap items-center gap-2">
+      {% if pagination.prev %}
+        <li><a class="btn btn-secondary" href="{{ pagination.prev.link|esc_url }}" rel="prev">{{ __('Previous', 'understack-wp-starter') }}</a></li>
+      {% endif %}
+      {% for page in pagination.pages %}
+        <li>
+          {% if page.link %}
+            <a class="btn btn-secondary" href="{{ page.link|esc_url }}">{{ page.title }}</a>
+          {% else %}
+            <span class="btn {{ page.current ? 'btn-primary' : 'border-transparent' }}"{% if page.current %} aria-current="page"{% endif %}>{{ page.title }}</span>
+          {% endif %}
+        </li>
+      {% endfor %}
+      {% if pagination.next %}
+        <li><a class="btn btn-secondary" href="{{ pagination.next.link|esc_url }}" rel="next">{{ __('Next', 'understack-wp-starter') }}</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+{% endif %}

@@ -1,0 +1,20 @@
+{#
+  Accessible modal built on the native dialog element (focus trapping, Esc,
+  focus return and inert background come from the browser).
+  Open it with any control carrying data-modal-open="{id}".
+  Parameters: id, title, body (HTML) or override the "body" block with embed.
+#}
+<dialog id="{{ id }}" class="modal" data-modal closedby="any" aria-labelledby="{{ id }}-title">
+  <div class="modal-panel">
+    <div class="flex items-start justify-between gap-4">
+      <h2 id="{{ id }}-title" class="text-xl font-semibold">{{ title|e }}</h2>
+      <button type="button" class="-mt-2 -mr-2 inline-flex size-9 items-center justify-center rounded-md" data-modal-close>
+        <span class="sr-only">{{ __('Close', 'understack-wp-starter') }}</span>
+        {% include 'components/icon.twig' with { name: 'close' } only %}
+      </button>
+    </div>
+    <div class="modal-body mt-4">
+      {% block body %}{{ body|default('') }}{% endblock %}
+    </div>
+  </div>
+</dialog>

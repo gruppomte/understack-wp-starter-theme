@@ -1,0 +1,112 @@
+/*
+ * WooCommerce bridge: WooCommerce ships its own layout stylesheet, this file only
+ * restores what the Tailwind preflight resets (buttons, headings, forms, lists)
+ * and aligns the shop with the theme tokens. Loaded only when WooCommerce is active.
+ */
+@import 'tailwindcss/theme' layer(theme);
+@import 'tailwindcss/utilities' layer(utilities) source(none);
+@import './theme.css';
+
+/*
+ * These rules stay outside the cascade layers on purpose: WooCommerce's own
+ * stylesheet is unlayered and would otherwise win over the theme.
+ */
+.woocommerce h1,
+.woocommerce h2,
+.woocommerce h3 {
+  @apply font-semibold tracking-tight;
+}
+
+.woocommerce h1 {
+  @apply text-3xl;
+}
+
+.woocommerce h2 {
+  @apply text-2xl;
+}
+
+.woocommerce h3 {
+  @apply text-xl;
+}
+
+.woocommerce ul.products li.product .woocommerce-loop-product__title {
+  @apply mt-3 text-base font-medium;
+}
+
+.woocommerce ul.products li.product .price,
+.woocommerce div.product p.price {
+  @apply text-ink;
+}
+
+.woocommerce div.product .woocommerce-product-details__short-description,
+.woocommerce div.product .woocommerce-tabs .panel {
+  @apply leading-relaxed;
+}
+
+.woocommerce #respond input#submit,
+.woocommerce a.button,
+.woocommerce button.button,
+.woocommerce input.button,
+.woocommerce #respond input#submit.alt,
+.woocommerce a.button.alt,
+.woocommerce button.button.alt,
+.woocommerce input.button.alt,
+.wc-block-components-button {
+  @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-md border border-accent bg-accent px-4 py-2 text-sm font-medium text-accent-contrast transition-colors hover:border-ink hover:bg-ink motion-reduce:transition-none;
+}
+
+.woocommerce a.button.disabled,
+.woocommerce button.button.disabled,
+.woocommerce input.button.disabled,
+.woocommerce button.button:disabled {
+  @apply cursor-not-allowed opacity-60;
+}
+
+.woocommerce form .form-row input.input-text,
+.woocommerce form .form-row textarea,
+.woocommerce form .form-row select,
+.woocommerce .quantity .qty,
+.woocommerce-cart .coupon .input-text {
+  @apply rounded-md border border-line bg-surface px-3 py-2;
+}
+
+.woocommerce form .form-row label {
+  @apply mb-1 block text-sm font-medium;
+}
+
+.woocommerce table.shop_table {
+  @apply w-full border-collapse text-left text-sm;
+}
+
+.woocommerce table.shop_table th,
+.woocommerce table.shop_table td {
+  @apply border-b border-line px-3 py-3 align-middle;
+}
+
+.woocommerce .woocommerce-message,
+.woocommerce .woocommerce-info,
+.woocommerce .woocommerce-error {
+  @apply mb-6 rounded-md border border-line bg-surface-muted px-4 py-3 text-sm;
+}
+
+.woocommerce .woocommerce-breadcrumb,
+.woocommerce .woocommerce-result-count {
+  @apply text-sm text-ink-muted;
+}
+
+.woocommerce nav.woocommerce-pagination ul {
+  @apply flex flex-wrap gap-2 border-0;
+}
+
+.woocommerce nav.woocommerce-pagination ul li {
+  @apply border-0;
+}
+
+.woocommerce nav.woocommerce-pagination ul li a,
+.woocommerce nav.woocommerce-pagination ul li span {
+  @apply inline-flex min-w-9 items-center justify-center rounded-md border border-line px-3 py-1.5 text-sm;
+}
+
+.woocommerce nav.woocommerce-pagination ul li span.current {
+  @apply border-accent bg-accent text-accent-contrast;
+}

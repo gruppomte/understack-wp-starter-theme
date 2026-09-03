@@ -1,0 +1,15 @@
+/*
+ * Block editor stylesheet: design tokens and the shared content typography so
+ * the editor mirrors the front end. Loaded through add_editor_style().
+ */
+@import 'tailwindcss/theme' layer(theme);
+@import 'tailwindcss/utilities' layer(utilities) source(none);
+@import './theme.css';
+@import './content.css';
+
+.editor-styles-wrapper {
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+  background-color: var(--color-surface);
+  -webkit-font-smoothing: antialiased;
+}

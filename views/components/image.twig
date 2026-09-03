@@ -1,0 +1,12 @@
+{#
+  Responsive image through the WordPress media API.
+  Parameters: image (Timber\Image or attachment ID), size, class, sizes,
+  priority (true for the LCP image), alt (omit to keep the editor text),
+  decorative (true renders an empty alt).
+#}
+{{ attachment_image(image, size|default('large'), {
+  class: class|default(''),
+  sizes: sizes|default(null),
+  priority: priority|default(false),
+  alt: decorative|default(false) ? '' : alt|default(null)
+}) }}

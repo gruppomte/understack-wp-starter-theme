@@ -1,0 +1,78 @@
+/* Classes that WordPress core output relies on. */
+@layer components {
+  .screen-reader-text {
+    @apply sr-only;
+  }
+
+  .alignleft {
+    float: left;
+    margin: 0.5rem 1.5rem 1rem 0;
+  }
+
+  .alignright {
+    float: right;
+    margin: 0.5rem 0 1rem 1.5rem;
+  }
+
+  .aligncenter {
+    display: block;
+    margin-inline: auto;
+  }
+
+  /* Wide and full alignments break out of the reading column; cqw avoids scrollbar overflow. */
+  .content .alignwide {
+    width: min(var(--container-page) - 2rem, 100cqw - 2rem);
+    max-width: none;
+    margin-inline: calc(50% - min(var(--container-page) - 2rem, 100cqw - 2rem) / 2);
+  }
+
+  .content .alignfull {
+    width: 100cqw;
+    max-width: none;
+    margin-inline: calc(50% - 50cqw);
+  }
+
+  .wp-caption {
+    max-width: 100%;
+  }
+
+  .wp-caption-text,
+  .gallery-caption,
+  .wp-element-caption {
+    @apply mt-2 text-sm text-ink-muted;
+  }
+
+  .sticky,
+  .bypostauthor {
+    display: revert;
+  }
+
+  .custom-logo {
+    @apply h-10 w-auto;
+  }
+
+  .comment-form label {
+    @apply mb-1 block text-sm font-medium;
+  }
+
+  .comment-form input:not([type='checkbox']):not([type='submit']),
+  .comment-form textarea {
+    @apply w-full rounded-md border border-line bg-surface px-3 py-2;
+  }
+
+  .comment-form .form-submit input[type='submit'] {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-md border border-accent bg-accent px-4 py-2 text-sm font-medium text-accent-contrast transition-colors hover:border-ink hover:bg-ink motion-reduce:transition-none;
+  }
+
+  .comment-form > p {
+    @apply mt-4;
+  }
+
+  .post-password-form input[type='password'] {
+    @apply rounded-md border border-line bg-surface px-3 py-2;
+  }
+
+  .post-password-form input[type='submit'] {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-md border border-accent bg-accent px-4 py-2 text-sm font-medium text-accent-contrast transition-colors hover:border-ink hover:bg-ink motion-reduce:transition-none;
+  }
+}

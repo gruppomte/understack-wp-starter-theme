@@ -1,0 +1,10 @@
+{% extends 'archives/archive.twig' %}
+
+{% block archive_header %}
+  {% include 'sections/page-header.twig' with { title: title } only %}
+  <div class="wrap mb-10">
+    <div class="max-w-xl">
+      {% include 'partials/search-form.twig' with { id: 'results' } %}
+    </div>
+  </div>
+{% endblock %}

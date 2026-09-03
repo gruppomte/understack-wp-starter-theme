@@ -1,0 +1,39 @@
+{% extends 'layouts/base.twig' %}
+
+{% block content %}
+  <article id="post-{{ post.ID }}" class="{{ post.css_class|esc_attr }}">
+    {% if post.password_required %}
+      <div class="wrap py-16">{{ function('get_the_password_form', post.ID) }}</div>
+    {% else %}
+      {% block page_header %}
+        {% include 'sections/page-header.twig' with {
+          title: post.title,
+          lead: post.meta('page_lead'),
+          hidden: post.meta('page_hide_title')
+        } only %}
+      {% endblock %}
+
+      {% block page_media %}
+        {% if post.thumbnail %}
+          <div class="wrap mb-10">
+            {% include 'components/image.twig' with {
+              image: post.thumbnail,
+              size: 'wide',
+              class: 'w-full rounded-md',
+              sizes: '(min-width: 80rem) 76rem, 100vw',
+              priority: true
+            } only %}
+          </div>
+        {% endif %}
+      {% endblock %}
+
+      {% block page_content %}
+        <div class="wrap pb-16">
+          <div class="content mx-auto max-w-3xl">{{ post.content }}</div>
+        </div>
+      {% endblock %}
+
+      {% block page_after %}{% endblock %}
+    {% endif %}
+  </article>
+{% endblock %}
