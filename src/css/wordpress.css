@@ -21,9 +21,11 @@
 
   /* Wide and full alignments break out of the reading column; cqw avoids scrollbar overflow. */
   .content .alignwide {
-    width: min(var(--container-page) - 2rem, 100cqw - 2rem);
+    width: min(var(--wp--style--global--wide-size, 80rem) - 2rem, 100cqw - 2rem);
     max-width: none;
-    margin-inline: calc(50% - min(var(--container-page) - 2rem, 100cqw - 2rem) / 2);
+    margin-inline: calc(
+      50% - min(var(--wp--style--global--wide-size, 80rem) - 2rem, 100cqw - 2rem) / 2
+    );
   }
 
   .content .alignfull {
@@ -57,11 +59,12 @@
 
   .comment-form input:not([type='checkbox']):not([type='submit']),
   .comment-form textarea {
-    @apply w-full rounded-md border border-line bg-surface px-3 py-2;
+    @apply field w-full;
   }
 
-  .comment-form .form-submit input[type='submit'] {
-    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-md border border-accent bg-accent px-4 py-2 text-sm font-medium text-accent-contrast transition-colors hover:border-ink hover:bg-ink motion-reduce:transition-none;
+  .comment-form .form-submit input[type='submit'],
+  .post-password-form input[type='submit'] {
+    @apply btn btn-primary;
   }
 
   .comment-form > p {
@@ -69,10 +72,6 @@
   }
 
   .post-password-form input[type='password'] {
-    @apply rounded-md border border-line bg-surface px-3 py-2;
-  }
-
-  .post-password-form input[type='submit'] {
-    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-md border border-accent bg-accent px-4 py-2 text-sm font-medium text-accent-contrast transition-colors hover:border-ink hover:bg-ink motion-reduce:transition-none;
+    @apply field;
   }
 }

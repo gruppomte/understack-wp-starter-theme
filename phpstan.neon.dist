@@ -1,0 +1,21 @@
+includes:
+    - vendor/szepeviktor/phpstan-wordpress/extension.neon
+
+parameters:
+    level: 5
+    tmpDir: .phpstan-cache
+    paths:
+        - app
+        - blocks
+        - functions.php
+        - index.php
+        - woocommerce.php
+        - tests/smoke.php
+        - tests/smoke-acf.php
+        - scripts/acf-json.php
+        - site
+    scanFiles:
+        - vendor/php-stubs/acf-pro-stubs/acf-pro-stubs.php
+    stubFiles:
+        - tests/stubs/acf.stub
+    treatPhpDocTypesAsCertain: false

@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
-import { existsSync, mkdirSync, unlinkSync, writeFileSync } from 'node:fs';
+import { existsSync, globSync, mkdirSync, unlinkSync, writeFileSync } from 'node:fs';
 import { dirname, relative, resolve } from 'node:path';
 
 const devServer = { host: 'localhost', port: 5173 };
@@ -43,9 +43,11 @@ function hotFilePlugin() {
  * them does not refresh the page on its own: reload the browser when they change.
  */
 function reloadOnTemplateChange() {
-  const watched = ['views', 'app', 'functions.php', 'index.php'].map((path) => resolve(path));
+  const watched = ['views', 'app', 'blocks', 'functions.php', 'index.php'].map((path) =>
+    resolve(path),
+  );
   const isTemplate = (file) =>
-    /\.(twig|php)$/.test(file) && watched.some((path) => file.startsWith(path));
+    /\.(twig|php|json)$/.test(file) && watched.some((path) => file.startsWith(path));
 
   return {
     name: 'theme:reload-templates',
@@ -65,6 +67,19 @@ function reloadOnTemplateChange() {
       }
     },
   };
+}
+
+/**
+ * Every block in blocks/<name>/ may ship style.css, editor.css and view.js; they
+ * are built as separate entries and attached to the block by app/Blocks/Blocks.php.
+ */
+function blockEntries() {
+  return Object.fromEntries(
+    globSync('blocks/*/{style.css,editor.css,view.js}').map((file) => [
+      file.replace(/\//g, '-').replace(/\.(css|js)$/, ''),
+      file,
+    ]),
+  );
 }
 
 export default defineConfig({
@@ -89,6 +104,7 @@ export default defineConfig({
         styles: 'src/css/app.css',
         editor: 'src/css/editor.css',
         woocommerce: 'src/css/woocommerce.css',
+        ...blockEntries(),
       },
     },
   },

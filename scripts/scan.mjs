@@ -25,6 +25,12 @@ const TERMS = JSON.parse(
 
 const SELF = fileURLToPath(import.meta.url);
 
+/**
+ * Development-only files that never ship (release.mjs excludes them) and may
+ * name the tools used while developing.
+ */
+const DEVELOPMENT_ONLY = new Set(['CLAUDE.md', '.env.example']);
+
 export function scan(root, { strict = false, identity = readIdentity(root) } = {}) {
   const identityValues = [identity.slug, identity.name, identity.namespace, identity.textDomain]
     .filter(Boolean)
@@ -36,16 +42,21 @@ export function scan(root, { strict = false, identity = readIdentity(root) } = {
   const matches = [];
 
   for (const file of walk(root)) {
-    if (file === SELF || !isTextFile(file)) {
+    const path = relative(root, file).split('\\').join('/');
+
+    if (
+      path === 'scripts/scan.mjs' ||
+      !isTextFile(file) ||
+      DEVELOPMENT_ONLY.has(path) ||
+      path.startsWith('.env')
+    ) {
       continue;
     }
 
-    const name = relative(root, file).split('\\').join('/');
-
     for (const term of TERMS) {
-      if (new RegExp(escapeRegExp(term), 'i').test(name)) {
+      if (new RegExp(escapeRegExp(term), 'i').test(path)) {
         matches.push({
-          file: name,
+          file: path,
           line: 0,
           term,
           expected: expectedTerms.has(term),

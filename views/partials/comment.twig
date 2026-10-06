@@ -5,7 +5,7 @@
     {% endif %}
     <div class="min-w-0 flex-1">
       <p class="text-sm">
-        <span class="font-medium">{{ comment.author.name }}</span>
+        <span class="font-medium">{{ comment.author.name|e }}</span>
         <time class="text-ink-muted" datetime="{{ comment.date('c') }}">{{ comment.date }}</time>
       </p>
       <div class="content mt-2 text-sm">{{ comment.content }}</div>

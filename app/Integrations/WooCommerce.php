@@ -38,17 +38,9 @@ final class WooCommerce implements Registrable
     public function enqueue(): void
     {
         $handle = Theme::SLUG . '-woocommerce';
-        $devServer = Assets::devServer();
 
-        if ($devServer !== null) {
-            wp_enqueue_style($handle, $devServer . '/' . self::ENTRY_STYLE, [], null);
-            return;
-        }
-
-        $url = Assets::buildEntryUrl(self::ENTRY_STYLE);
-
-        if ($url !== null) {
-            wp_enqueue_style($handle, $url, [], null);
+        if (Assets::registerStyle($handle, self::ENTRY_STYLE)) {
+            wp_enqueue_style($handle);
         }
     }
 }

@@ -8,13 +8,9 @@
   <div class="wrap pb-16">
     {% block archive_list %}
       {% if posts|length > 0 %}
-        <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3" data-animate-stagger>
-          {% for item in posts %}
-            {% include 'components/card.twig' with { post: item } only %}
-          {% endfor %}
-        </div>
+        {% include 'components/post-grid.twig' with { posts: posts } only %}
       {% else %}
-        {% include 'system/no-content.twig' %}
+        {% include 'system/no-content.twig' with { search_form: show_search_form|default(true) } only %}
       {% endif %}
     {% endblock %}
 

@@ -1,17 +1,29 @@
-/* Design tokens. Neutral by design: adjust per project. */
-@theme {
-  --font-sans: ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+/*
+ * Design tokens. theme.json is the single source: WordPress emits the presets as
+ * --wp--preset-* custom properties (front end and editor) and Tailwind consumes
+ * them here, so editors and utilities always share the same values.
+ * Change colours, fonts and sizes in theme.json; add Tailwind-only tokens below.
+ */
+@theme inline {
+  --font-sans: var(--wp--preset--font-family--sans);
 
-  --color-ink: oklch(21% 0.01 260);
-  --color-ink-muted: oklch(50% 0.012 260);
-  --color-surface: oklch(100% 0 0);
-  --color-surface-muted: oklch(97% 0.004 260);
-  --color-line: oklch(90% 0.006 260);
-  --color-accent: oklch(30% 0.02 260);
-  --color-accent-contrast: oklch(100% 0 0);
+  --color-ink: var(--wp--preset--color--ink);
+  --color-ink-muted: var(--wp--preset--color--ink-muted);
+  --color-surface: var(--wp--preset--color--surface);
+  --color-surface-muted: var(--wp--preset--color--surface-muted);
+  --color-line: var(--wp--preset--color--line);
+  --color-line-strong: var(--wp--preset--color--line-strong);
+  --color-accent: var(--wp--preset--color--accent);
+  --color-accent-contrast: var(--wp--preset--color--accent-contrast);
 
-  --container-page: 80rem;
-
-  --text-display: clamp(2rem, 1.4rem + 2.5vw, 3.25rem);
+  --text-sm: var(--wp--preset--font-size--sm);
+  --text-base: var(--wp--preset--font-size--base);
+  --text-lg: var(--wp--preset--font-size--lg);
+  --text-xl: var(--wp--preset--font-size--xl);
+  --text-2xl: var(--wp--preset--font-size--heading);
+  --text-3xl: var(--wp--preset--font-size--title);
+  --text-display: var(--wp--preset--font-size--display);
   --text-display--line-height: 1.1;
+
+  --container-page: var(--wp--style--global--wide-size, 80rem);
 }

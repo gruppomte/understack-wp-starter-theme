@@ -1,0 +1,13 @@
+<?php
+
+/**
+ * PHPStan stub: the published ACF stubs declare acf_get_setting() without a
+ * return type, so its result would be reported as void.
+ *
+ * @param string $name
+ * @param mixed $value
+ * @return mixed
+ */
+function acf_get_setting($name, $value = null)
+{
+}

@@ -1,0 +1,30 @@
+/*
+ * Hero block layout. Loaded only on pages where the block renders (front end and
+ * editor). Utility classes used in block.twig come from the main stylesheet.
+ */
+/* Cascade layer order: declared first in every entry so a block or plugin stylesheet printed before the main one cannot reorder it. */
+@layer theme, base, components, utilities;
+
+@import 'tailwindcss/theme' layer(theme);
+@import 'tailwindcss/utilities' layer(utilities) source(none);
+@import '../../src/css/theme.css';
+
+.block-hero {
+  @apply py-12 md:py-20;
+}
+
+.block-hero .hero-layout {
+  @apply grid items-center gap-10 md:grid-cols-2;
+}
+
+.block-hero .hero-layout-single {
+  @apply md:grid-cols-1;
+}
+
+.block-hero .hero-layout-reverse .hero-media {
+  @apply md:order-first;
+}
+
+.block-hero .hero-image {
+  @apply aspect-4/3 w-full rounded-md object-cover;
+}

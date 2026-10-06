@@ -5,10 +5,10 @@
     {% if post.password_required %}
       <div class="wrap py-16">{{ function('get_the_password_form', post.ID) }}</div>
     {% else %}
-      <header class="wrap py-10 md:py-16" data-hero>
+      <header class="wrap py-10 md:py-16">
         <div class="mx-auto max-w-3xl">
-          <h1 class="text-display font-semibold tracking-tight" data-hero-item>{{ post.title }}</h1>
-          <div class="mt-4" data-hero-item>
+          <h1 class="text-display font-semibold tracking-tight">{{ post.title }}</h1>
+          <div class="mt-4">
             {% include 'partials/post-meta.twig' with { post: post } only %}
           </div>
         </div>
@@ -32,14 +32,17 @@
         <div class="content mx-auto max-w-3xl">{{ post.content }}</div>
       </div>
 
-      {% set tags = post.terms('post_tag') %}
+      {% set tags = post_terms(post, 'post_tag') %}
       {% if tags %}
         <footer class="wrap mt-10">
-          <ul class="mx-auto flex max-w-3xl flex-wrap gap-2" aria-label="{{ __('Tags', 'understack-wp-starter')|esc_attr }}">
-            {% for tag in tags %}
-              <li><a class="inline-block rounded-full border border-line px-3 py-1 text-sm hover:underline" href="{{ tag.link|esc_url }}">{{ tag.title }}</a></li>
-            {% endfor %}
-          </ul>
+          <div class="mx-auto max-w-3xl">
+            <h2 id="post-tags-title" class="sr-only">{{ __('Tags', 'understack-wp-starter') }}</h2>
+            <ul class="flex flex-wrap gap-2" aria-labelledby="post-tags-title">
+              {% for tag in tags %}
+                <li><a class="inline-block rounded-full border border-line-strong px-3 py-1 text-sm hover:underline" href="{{ tag.link|esc_url }}">{{ tag.title }}</a></li>
+              {% endfor %}
+            </ul>
+          </div>
         </footer>
       {% endif %}
 

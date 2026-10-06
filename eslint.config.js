@@ -19,7 +19,13 @@ export default defineConfig([
     },
   },
   {
-    files: ['scripts/**/*.mjs', 'tests/**/*.mjs', 'vite.config.js', 'eslint.config.js'],
+    files: [
+      'scripts/**/*.mjs',
+      'tests/**/*.{js,mjs}',
+      'vite.config.js',
+      'eslint.config.js',
+      'playwright.config.js',
+    ],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',

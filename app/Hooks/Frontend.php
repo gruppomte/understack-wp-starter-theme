@@ -14,6 +14,7 @@ final class Frontend implements Registrable
     public function register(): void
     {
         add_action('init', [$this, 'removeEmojiScripts']);
+        add_filter('comment_form_defaults', [$this, 'commentFormDefaults']);
     }
 
     /**
@@ -32,5 +33,21 @@ final class Frontend implements Registrable
         remove_filter('comment_text_rss', 'wp_staticize_emoji');
         remove_filter('wp_mail', 'wp_staticize_emoji_for_email');
         add_filter('emoji_svg_url', '__return_false');
+    }
+
+    /**
+     * Core renders the reply title as an h3; the theme has an h1 and an h2 at most
+     * above it, so an h2 keeps the heading outline continuous.
+     *
+     * @param array<string, mixed> $defaults
+     * @return array<string, mixed>
+     */
+    public function commentFormDefaults(array $defaults): array
+    {
+        $classes = 'comment-reply-title mt-10 text-xl font-semibold';
+        $defaults['title_reply_before'] = '<h2 id="reply-title" class="' . $classes . '">';
+        $defaults['title_reply_after'] = '</h2>';
+
+        return $defaults;
     }
 }

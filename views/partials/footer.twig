@@ -18,16 +18,18 @@
     {% endif %}
 
     {% if options.social_links %}
-      <ul class="flex flex-wrap gap-4 text-sm" aria-label="{{ __('Social profiles', 'understack-wp-starter')|esc_attr }}">
-        {% for link in options.social_links %}
-          <li>
-            <a class="hover:underline" href="{{ link.url }}" target="_blank" rel="noopener">
-              {{ link.label|e }}
-              <span class="sr-only">{{ __('(opens in a new tab)', 'understack-wp-starter') }}</span>
-            </a>
-          </li>
-        {% endfor %}
-      </ul>
+      <nav aria-label="{{ __('Social profiles', 'understack-wp-starter')|esc_attr }}">
+        <ul class="flex flex-wrap gap-4 text-sm">
+          {% for link in options.social_links %}
+            <li>
+              <a class="hover:underline" href="{{ link.url|esc_url }}" target="_blank" rel="noopener">
+                {{ link.label|e }}
+                <span class="sr-only">{{ __('(opens in a new tab)', 'understack-wp-starter') }}</span>
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </nav>
     {% endif %}
   </div>
 

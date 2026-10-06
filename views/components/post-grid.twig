@@ -1,0 +1,14 @@
+{#
+  Grid of post cards. Parameters: posts, heading (card heading level, default 'h2'),
+  animate (scroll reveal for grids below the fold, default true).
+  The first row is loaded eagerly: it is usually in the initial viewport.
+#}
+<div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3"{% if animate|default(true) %} data-animate-stagger{% endif %}>
+  {% for item in posts %}
+    {% include 'components/card.twig' with {
+      post: item,
+      heading: heading|default('h2'),
+      eager: loop.index <= 3
+    } only %}
+  {% endfor %}
+</div>

@@ -3,6 +3,9 @@
     <description>PSR-12 formatting with the WordPress security and best-practice sniffs.</description>
 
     <file>app</file>
+    <file>blocks</file>
+    <file>scripts</file>
+    <file>site</file>
     <file>tests</file>
     <file>functions.php</file>
     <file>index.php</file>

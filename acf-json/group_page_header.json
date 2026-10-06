@@ -24,11 +24,11 @@
         },
         {
             "key": "field_68b8f0a1b2c52",
-            "label": "Hide title",
+            "label": "Hide the page title",
             "name": "page_hide_title",
             "aria-label": "",
             "type": "true_false",
-            "instructions": "The title stays available to assistive technology and search engines.",
+            "instructions": "The content must then provide the main heading, for example a Hero block set as page title.",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -61,5 +61,5 @@
     "active": true,
     "description": "",
     "show_in_rest": 0,
-    "modified": 1756900000
+    "modified": 1759766400
 }

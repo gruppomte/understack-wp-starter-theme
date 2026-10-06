@@ -1,9 +1,20 @@
-import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { basename, extname, join, relative } from 'node:path';
 import { spawnSync } from 'node:child_process';
 
 /** Directories that are never part of the theme's own code. */
-export const EXCLUDED_DIRECTORIES = new Set(['node_modules', 'vendor', 'dist', '.git', '.vite']);
+export const EXCLUDED_DIRECTORIES = new Set([
+  'node_modules',
+  'vendor',
+  'dist',
+  '.git',
+  '.vite',
+  '.phpstan-cache',
+  'test-results',
+  'playwright-report',
+  'blob-report',
+  '.lighthouseci',
+]);
 
 /** Third-party or generated paths (relative to the theme root) that are never scanned or rewritten. */
 export const EXCLUDED_PATHS = ['includes/acf', 'public/build', 'public/hot'];
@@ -95,12 +106,20 @@ export function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-/** Runs a command, returning { status, stdout, stderr }. */
+/** Windows ships npm, npx and composer as .cmd shims; resolving them avoids a shell. */
+function executable(command) {
+  if (process.platform === 'win32' && ['npm', 'npx', 'composer'].includes(command)) {
+    return `${command}.cmd`;
+  }
+
+  return command;
+}
+
+/** Runs a command without a shell, returning { status, stdout, stderr }. */
 export function run(command, args, options = {}) {
-  const result = spawnSync(command, args, {
+  const result = spawnSync(executable(command), args, {
     encoding: 'utf8',
     stdio: options.inherit ? 'inherit' : 'pipe',
-    shell: process.platform === 'win32',
     ...options,
   });
 
@@ -166,4 +185,30 @@ export function toBoolean(value, fallback) {
   }
 
   return ['1', 'y', 'yes', 'true', 'on'].includes(String(value).trim().toLowerCase());
+}
+
+/**
+ * Local configuration: .env.example provides the defaults, .env.local (ignored
+ * by Git) the real values. Only the Node tooling reads these files.
+ */
+export function readLocalEnv(root) {
+  const values = {};
+
+  for (const name of ['.env.example', '.env.local']) {
+    const path = join(root, name);
+
+    if (!existsSync(path)) continue;
+
+    for (const line of readFileSync(path, 'utf8').split(/\r?\n/)) {
+      const match = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*?)\s*$/);
+
+      if (!match || line.trim().startsWith('#')) continue;
+
+      const value = match[2].replace(/^(['"])(.*)\1$/, '$2');
+
+      if (value !== '' || !(match[1] in values)) values[match[1]] = value;
+    }
+  }
+
+  return values;
 }

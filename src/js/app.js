@@ -1,4 +1,3 @@
-import './modules/alpine.js';
 import { init as initNavigation } from './modules/navigation.js';
 
 initNavigation();
@@ -9,14 +8,17 @@ initNavigation();
  */
 const features = [
   {
+    // Alpine.js for small declarative UI state: loaded when a component is present.
+    selector: '[x-data]',
+    load: () => import('./modules/alpine.js'),
+  },
+  {
     selector: 'dialog[data-modal]',
     load: () => import('./modules/modal.js'),
   },
   {
     selector: '[data-animate], [data-animate-stagger], [data-hero], [data-parallax]',
     load: () => import('./animations/index.js'),
-    // Never leave content hidden if the animation module fails to load.
-    onError: () => document.documentElement.classList.remove('motion'),
   },
 ];
 
@@ -28,8 +30,5 @@ for (const feature of features) {
   feature
     .load()
     .then((module) => module.init())
-    .catch((error) => {
-      feature.onError?.();
-      console.error(error);
-    });
+    .catch((error) => console.error(error));
 }

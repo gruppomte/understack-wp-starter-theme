@@ -15,6 +15,8 @@ final class SearchController extends Controller
                 get_search_query()
             ),
             'description' => '',
+            // The results page already shows a search form.
+            'show_search_form' => false,
         ]);
 
         $context['pagination'] = isset($context['posts']) ? $context['posts']->pagination() : null;

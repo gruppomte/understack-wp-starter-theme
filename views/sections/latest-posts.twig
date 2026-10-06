@@ -3,12 +3,10 @@
   <div class="flex flex-wrap items-baseline justify-between gap-4 border-t border-line pt-10">
     <h2 id="latest-posts-title" class="text-2xl font-semibold tracking-tight">{{ title }}</h2>
     {% if link %}
-      <a class="text-sm hover:underline" href="{{ link|esc_url }}">{{ __('All posts', 'understack-wp-starter') }}</a>
+      <a class="text-sm underline hover:no-underline" href="{{ link|esc_url }}">{{ __('All posts', 'understack-wp-starter') }}</a>
     {% endif %}
   </div>
-  <div class="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3" data-animate-stagger>
-    {% for item in posts %}
-      {% include 'components/card.twig' with { post: item } only %}
-    {% endfor %}
+  <div class="mt-8">
+    {% include 'components/post-grid.twig' with { posts: posts, heading: 'h3' } only %}
   </div>
 </section>

@@ -4,7 +4,7 @@
     {% include 'partials/branding.twig' %}
 
     <div class="flex items-center gap-4 md:order-3">
-      {% if options.header_cta %}
+      {% if options.header_cta and options.header_cta.title %}
         <div class="hidden sm:block">
           {% include 'components/button.twig' with {
             label: options.header_cta.title,

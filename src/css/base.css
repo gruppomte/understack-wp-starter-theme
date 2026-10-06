@@ -40,16 +40,6 @@
     display: none !important;
   }
 
-  /*
-   * Elements revealed by the animation module start hidden only when JavaScript
-   * runs and the visitor allows motion (the "motion" class is set before first paint).
-   */
-  .motion [data-animate],
-  .motion [data-animate-stagger] > *,
-  .motion [data-hero-item] {
-    opacity: 0;
-  }
-
   .site-main {
     container-type: inline-size;
   }

@@ -1,17 +1,19 @@
 {#
   Page header used by pages, archives and system pages.
-  Parameters: title (HTML from WordPress), lead (plain text), description (HTML), hidden (bool).
+  Parameters: title (HTML from WordPress), lead (plain text), description (HTML),
+  hidden (bool: the content provides the main heading, for example a hero block).
+  The heading is painted immediately: it is usually the LCP element.
 #}
-<header class="wrap py-10 md:py-16" data-hero>
-  {% if hidden %}
-    <h1 class="sr-only">{{ title }}</h1>
-  {% else %}
-    <h1 class="text-display font-semibold tracking-tight" data-hero-item>{{ title }}</h1>
-  {% endif %}
-  {% if lead %}
-    <p class="mt-4 max-w-prose text-lg text-ink-muted" data-hero-item>{{ lead|e }}</p>
-  {% endif %}
-  {% if description %}
-    <div class="content mt-4 max-w-prose text-ink-muted" data-hero-item>{{ description }}</div>
-  {% endif %}
-</header>
+{% if not hidden or lead or description %}
+  <header class="wrap py-10 md:py-16">
+    {% if not hidden %}
+      <h1 class="text-display font-semibold tracking-tight">{{ title }}</h1>
+    {% endif %}
+    {% if lead %}
+      <p class="{{ hidden ? '' : 'mt-4 ' }}max-w-prose text-lg text-ink-muted">{{ lead|e }}</p>
+    {% endif %}
+    {% if description %}
+      <div class="content mt-4 max-w-prose text-ink-muted">{{ description }}</div>
+    {% endif %}
+  </header>
+{% endif %}

@@ -10,6 +10,22 @@
 
 declare(strict_types=1);
 
+if (PHP_SAPI !== 'cli') {
+    exit;
+}
+
+// A failed WordPress bootstrap (for example a database error) ends the process
+// with exit code 0: without this guard the result would look like a pass.
+$state = new stdClass();
+$state->completed = false;
+
+register_shutdown_function(static function () use ($state): void {
+    if (! $state->completed) {
+        fwrite(STDERR, "Smoke test aborted before completion (WordPress did not load?).\n");
+        exit(1);
+    }
+});
+
 $themeDirectory = dirname(__DIR__);
 $wpLoad = $argv[1] ?? null;
 
@@ -59,7 +75,7 @@ $check('Composer autoloader', class_exists(Understack\Core\Theme::class));
 $check(
     'Timber initialised',
     class_exists(Timber\Timber::class),
-    'Timber ' . (Timber\Timber::$version ?? 'unknown')
+    'Timber ' . Timber\Timber::$version
 );
 $check('Twig available', class_exists(Twig\Environment::class), 'Twig ' . Twig\Environment::VERSION);
 $menus = get_registered_nav_menus();
@@ -129,23 +145,11 @@ $check(
 );
 
 if (class_exists('ACF')) {
-    $source = str_starts_with((string) acf_get_setting('path'), $themeDirectory) ? 'bundled' : 'plugin';
-    $groups = count(acf_get_local_field_groups());
-    $check(
-        'ACF loaded',
-        defined('ACF_VERSION'),
-        sprintf('ACF %s (%s%s)', ACF_VERSION, defined('ACF_PRO') ? 'PRO, ' : '', $source)
-    );
-    $check('ACF JSON load path', in_array($themeDirectory . '/acf-json', (array) acf_get_setting('load_json'), true));
-    $check('ACF JSON save path', acf_get_setting('save_json') === $themeDirectory . '/acf-json');
-    $check('ACF local field groups', $groups > 0, $groups . ' group(s)');
-    $check(
-        'ACF options page',
-        function_exists('acf_get_options_page') && acf_get_options_page('site-settings') !== null
-    );
+    require __DIR__ . '/smoke-acf.php';
 } else {
     $check('ACF loaded', false, 'ACF is not available (bundle it with "npm run acf:install")');
 }
 
 fwrite(STDOUT, $failures === 0 ? "Smoke test passed.\n" : sprintf("%d check(s) failed.\n", $failures));
+$state->completed = true;
 exit($failures === 0 ? 0 : 1);

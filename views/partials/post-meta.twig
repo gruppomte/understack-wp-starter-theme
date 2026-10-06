@@ -1,12 +1,12 @@
-{% set categories = post.terms('category') %}
+{% set categories = post_terms(post, 'category') %}
 <p class="text-sm text-ink-muted">
   <time datetime="{{ post.date('c') }}">{{ post.date }}</time>
   {% if post.author and not compact %}
     <span aria-hidden="true">&middot;</span>
-    <a class="hover:underline" href="{{ post.author.link|esc_url }}">{{ post.author.name }}</a>
+    <a class="underline hover:no-underline" href="{{ post.author.link|esc_url }}">{{ post.author.name|e }}</a>
   {% endif %}
   {% if categories %}
     <span aria-hidden="true">&middot;</span>
-    {% for term in categories %}<a class="hover:underline" href="{{ term.link|esc_url }}">{{ term.title }}</a>{% if not loop.last %}, {% endif %}{% endfor %}
+    {% for term in categories %}<a class="underline hover:no-underline" href="{{ term.link|esc_url }}">{{ term.title }}</a>{% if not loop.last %}, {% endif %}{% endfor %}
   {% endif %}
 </p>

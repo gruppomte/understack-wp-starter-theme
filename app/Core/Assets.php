@@ -9,8 +9,9 @@ use Understack\Support\Registrable;
 use Understack\Support\ViteManifest;
 
 /**
- * Enqueues the Vite build. In local environments a running dev server
- * (detected through public/hot) is used instead of the compiled files.
+ * Enqueues the Vite build through the WordPress Script Modules API. In local
+ * environments a running dev server (detected through public/hot) is used instead
+ * of the compiled files.
  */
 final class Assets implements Registrable
 {
@@ -73,17 +74,12 @@ final class Assets implements Registrable
     }
 
     /**
-     * Adds "js" and "motion" classes before first paint so CSS can hide elements that
-     * the animation module reveals, without ever hiding them when JavaScript or motion
-     * is unavailable.
+     * Marks the document as JavaScript-capable before first paint so the
+     * navigation can switch from its no-JS fallback to the toggled version.
      */
     public function printDocumentClasses(): void
     {
-        wp_print_inline_script_tag(
-            'document.documentElement.classList.add("js");'
-            . 'if(!window.matchMedia("(prefers-reduced-motion: reduce)").matches)'
-            . '{document.documentElement.classList.add("motion")}'
-        );
+        wp_print_inline_script_tag('document.documentElement.classList.add("js");');
     }
 
     public function missingBuildNotice(): void
@@ -119,29 +115,75 @@ final class Assets implements Registrable
     }
 
     /**
-     * Resolves a manifest entry to a URL, or null when it is not part of the build.
+     * URL of a Vite entry: the dev server while it runs, otherwise the hashed
+     * build file. Null when the entry is not part of the build.
      */
-    public static function buildEntryUrl(string $entry): ?string
+    public static function entryUrl(string $entry): ?string
     {
+        $devServer = self::devServer();
+
+        if ($devServer !== null) {
+            return $devServer . '/' . ltrim($entry, '/');
+        }
+
         $item = self::manifest()->entry($entry);
 
         return $item === null ? null : Theme::url(self::BUILD_DIRECTORY . '/' . ltrim((string) $item['file'], '/'));
     }
 
     /**
-     * URL of a static file kept in public/ (outside the Vite build), versioned by modification time.
+     * Registers a stylesheet entry under a handle (not enqueued). True when registered.
      */
-    public static function url(string $path): string
+    public static function registerStyle(string $handle, string $entry): bool
     {
-        $path = ltrim($path, '/');
-        $file = Theme::path('public/' . $path);
-        $url = Theme::url('public/' . $path);
+        $url = self::entryUrl($entry);
 
-        if (is_readable($file)) {
-            $url = add_query_arg('v', (string) filemtime($file), $url);
+        // wp_register_style() returns false for a handle registered earlier in the request.
+        return $url !== null && (wp_style_is($handle, 'registered') || wp_register_style($handle, $url, [], null));
+    }
+
+    /**
+     * Registers a JavaScript entry as a script module (not enqueued). True when registered.
+     */
+    public static function registerModule(string $id, string $entry): bool
+    {
+        $url = self::entryUrl($entry);
+
+        if ($url === null) {
+            return false;
         }
 
-        return esc_url($url);
+        wp_register_script_module($id, $url, [], null);
+
+        return true;
+    }
+
+    /**
+     * Enqueues a third-party script (analytics, maps, chat) without blocking
+     * rendering. Extra attributes let a consent manager gate it, for example
+     * ['type' => 'text/plain', 'data-cookieconsent' => 'statistics'].
+     *
+     * @param array<string, string> $attributes
+     */
+    public static function enqueueExternal(
+        string $handle,
+        string $src,
+        array $attributes = [],
+        string $strategy = 'async'
+    ): void {
+        wp_enqueue_script($handle, $src, [], null, ['in_footer' => true, 'strategy' => $strategy]);
+
+        if ($attributes === []) {
+            return;
+        }
+
+        add_filter('wp_script_attributes', static function (array $current) use ($handle, $attributes): array {
+            if (($current['id'] ?? '') === $handle . '-js') {
+                return array_merge($current, $attributes);
+            }
+
+            return $current;
+        });
     }
 
     public static function manifest(): ViteManifest
@@ -185,7 +227,7 @@ final class Assets implements Registrable
     private static function isReachable(string $origin): bool
     {
         $response = wp_remote_get($origin . '/@vite/client', [
-            'timeout' => 2,
+            'timeout' => 1,
             'limit_response_size' => 1024,
         ]);
 

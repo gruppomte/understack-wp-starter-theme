@@ -1,8 +1,9 @@
 import { gsap } from 'gsap';
 
 /**
- * Page hero: elements marked with data-hero-item inside a data-hero container
- * enter with a short stagger on load. Kept brief so the main heading paints early.
+ * Opt-in entrance for secondary hero elements: data-hero-item inside a data-hero
+ * container. Keep the LCP element (the main heading or image) out of it: an
+ * entrance starts from opacity 0 and would delay the first meaningful paint.
  */
 export function hero(root = document) {
   for (const container of root.querySelectorAll('[data-hero]')) {
@@ -12,10 +13,6 @@ export function hero(root = document) {
       continue;
     }
 
-    gsap.fromTo(
-      items,
-      { autoAlpha: 0, y: 16 },
-      { autoAlpha: 1, y: 0, duration: 0.5, stagger: 0.08, clearProps: 'transform' },
-    );
+    gsap.from(items, { opacity: 0, y: 16, duration: 0.5, stagger: 0.08, clearProps: 'transform' });
   }
 }

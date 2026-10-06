@@ -4,7 +4,7 @@
 #}
 {% set path = 'components/icons/' ~ name ~ '.twig' %}
 <svg
-  class="icon shrink-0 {{ class|default('size-5') }}"
+  class="icon shrink-0 {{ class|default('size-5')|esc_attr }}"
   viewBox="0 0 24 24"
   fill="none"
   stroke="currentColor"

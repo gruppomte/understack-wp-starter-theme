@@ -73,6 +73,12 @@ export function init(root = document) {
     }
   });
 
+  header.addEventListener('focusout', (event) => {
+    if (event.relatedTarget instanceof Node && !header.contains(event.relatedTarget)) {
+      closeAll();
+    }
+  });
+
   document.addEventListener('keydown', (event) => {
     if (event.key !== 'Escape' || !toggles.some(isExpanded)) {
       return;

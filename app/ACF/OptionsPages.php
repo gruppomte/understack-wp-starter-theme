@@ -27,7 +27,6 @@ final class OptionsPages implements Registrable
             'menu_slug' => 'site-settings',
             'capability' => 'edit_theme_options',
             'redirect' => false,
-            'autoload' => true,
         ]);
     }
 }

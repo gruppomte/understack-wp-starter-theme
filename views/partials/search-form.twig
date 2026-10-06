@@ -1,9 +1,9 @@
 {% set field_id = 'search-field-' ~ (id|default('main')) %}
 <form role="search" method="get" action="{{ site.link|esc_url }}" class="flex gap-2">
-  <label for="{{ field_id }}" class="sr-only">{{ __('Search', 'understack-wp-starter') }}</label>
+  <label for="{{ field_id|esc_attr }}" class="sr-only">{{ __('Search', 'understack-wp-starter') }}</label>
   <input
-    id="{{ field_id }}"
-    class="w-full rounded-md border border-line bg-surface px-3 py-2"
+    id="{{ field_id|esc_attr }}"
+    class="field w-full"
     type="search"
     name="s"
     value="{{ function('get_search_query') }}"

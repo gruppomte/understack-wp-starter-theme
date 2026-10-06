@@ -1,9 +1,14 @@
+/* Cascade layer order: declared first in every entry so a block or plugin stylesheet printed before the main one cannot reorder it. */
+@layer theme, base, components, utilities;
+
 @import 'tailwindcss';
 
 @source "../../views";
 @source "../../app";
+@source "../../blocks";
 
 @import './theme.css';
+@import './utilities.css';
 @import './base.css';
 @import './components.css';
 @import './content.css' layer(components);

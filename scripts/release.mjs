@@ -4,10 +4,19 @@
  * files, the compiled assets and the production Composer dependencies.
  * No npm or Composer is needed on the production server.
  *
- *   npm run release [-- --keep-stage]
+ *   npm run release [-- --keep-stage] [--allow-dirty]
  */
 import { ZipArchive } from 'archiver';
-import { createWriteStream, cpSync, existsSync, mkdirSync, rmSync, statSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import {
+  createWriteStream,
+  cpSync,
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  rmSync,
+  statSync,
+} from 'node:fs';
 import { basename, join, relative } from 'node:path';
 import { commandExists, parseArgs, readIdentity, run, walk } from './lib.mjs';
 import { formatReport, scan } from './scan.mjs';
@@ -21,6 +30,7 @@ const zipPath = join(dist, `${identity.slug}.zip`);
 
 const RUNTIME_PATHS = [
   'app',
+  'blocks',
   'views',
   'acf-json',
   'includes',
@@ -37,6 +47,8 @@ const RUNTIME_PATHS = [
 ];
 
 const EXCLUDED_FILES = /(^|\/)(\.DS_Store|Thumbs\.db|\.gitkeep|hot|.*\.log|.*\.map)$/;
+// Block sources are compiled into public/build; only block.json, render.php and the Twig template ship.
+const BLOCK_SOURCES = /^blocks\/[^/]+\/(style|editor)\.css$|^blocks\/[^/]+\/view\.js$/;
 
 function fail(message) {
   console.error(message);
@@ -45,6 +57,24 @@ function fail(message) {
 
 function step(title) {
   console.log(`\n== ${title}`);
+}
+
+step('Pre-flight');
+
+const pkgVersion = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')).version;
+
+if (pkgVersion !== identity.version) {
+  fail(`Version mismatch: style.css says ${identity.version}, package.json says ${pkgVersion}.`);
+}
+
+if (commandExists('git') && existsSync(join(root, '.git'))) {
+  const status = run('git', ['status', '--porcelain'], { cwd: root });
+
+  if (status.status === 0 && status.stdout.trim() !== '' && !options['allow-dirty']) {
+    fail(
+      `The working tree has uncommitted changes; commit them or pass --allow-dirty:\n${status.stdout.trim()}`,
+    );
+  }
 }
 
 step('Production build');
@@ -74,7 +104,10 @@ for (const path of RUNTIME_PATHS) {
 
   cpSync(source, join(stage, path), {
     recursive: true,
-    filter: (candidate) => !EXCLUDED_FILES.test(candidate) || candidate === source,
+    filter: (candidate) =>
+      candidate === source ||
+      (!EXCLUDED_FILES.test(candidate) &&
+        !BLOCK_SOURCES.test(relative(root, candidate).split('\\').join('/'))),
   });
 }
 
@@ -160,6 +193,7 @@ if (!options['keep-stage']) {
 }
 
 const size = (statSync(zipPath).size / 1024 / 1024).toFixed(2);
+const checksum = createHash('sha256').update(readFileSync(zipPath)).digest('hex');
 console.log(
-  `\nRelease ready: ${relative(root, zipPath)} (${size} MB, version ${identity.version})`,
+  `\nRelease ready: ${relative(root, zipPath)} (${size} MB, version ${identity.version})\nSHA-256: ${checksum}`,
 );

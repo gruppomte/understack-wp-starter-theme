@@ -9,4 +9,11 @@ public/hot
 .DS_Store
 Thumbs.db
 *.log
+*.zip
 .phpcs-cache
+.phpstan-cache/
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+.lighthouseci/

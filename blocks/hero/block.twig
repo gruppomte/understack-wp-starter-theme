@@ -1,0 +1,43 @@
+{#
+  Hero block. Context: fields (heading, heading_is_title, text, link, image,
+  image_position), wrapper_attributes, is_preview.
+  The heading and image paint immediately: they are the LCP candidates.
+#}
+{% set heading_tag = fields.heading_is_title ? 'h1' : 'h2' %}
+{% set layout = ['hero-layout', fields.image_position == 'start' ? 'hero-layout-reverse' : '', fields.image ? '' : 'hero-layout-single']|join(' ')|trim %}
+<section {{ wrapper_attributes }}>
+  <div class="wrap">
+    <div class="{{ layout|esc_attr }}">
+      <div class="hero-copy">
+        {% if fields.heading %}
+          <{{ heading_tag }} class="text-display font-semibold tracking-tight">{{ fields.heading|e }}</{{ heading_tag }}>
+        {% elseif is_preview %}
+          <p class="text-ink-muted">{{ __('Add a heading to the hero block.', 'understack-wp-starter') }}</p>
+        {% endif %}
+        {% if fields.text %}
+          <p class="mt-4 max-w-prose text-lg text-ink-muted">{{ fields.text|e|nl2br }}</p>
+        {% endif %}
+        {% if fields.link and fields.link.url %}
+          <div class="mt-8">
+            {% include 'components/button.twig' with {
+              label: fields.link.title ?: fields.link.url,
+              url: fields.link.url,
+              target: fields.link.target
+            } only %}
+          </div>
+        {% endif %}
+      </div>
+      {% if fields.image %}
+        <div class="hero-media">
+          {% include 'components/image.twig' with {
+            image: fields.image,
+            size: 'large',
+            class: 'hero-image',
+            sizes: '(min-width: 64rem) 36rem, 100vw',
+            priority: true
+          } only %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>

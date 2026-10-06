@@ -7,6 +7,7 @@ namespace Understack\Controllers;
 use Timber\Post;
 use Timber\Timber;
 use Understack\Core\PageTemplates;
+use Understack\Support\Posts;
 
 final class PageController extends Controller
 {
@@ -25,12 +26,15 @@ final class PageController extends Controller
         if ($post instanceof Post) {
             if (is_front_page()) {
                 $templates[] = 'pages/front-page.twig';
-                $context['latest_posts'] = Timber::get_posts([
+                $latest = Timber::get_posts([
                     'post_type' => 'post',
                     'post_status' => 'publish',
                     'posts_per_page' => 3,
                     'ignore_sticky_posts' => true,
+                    'no_found_rows' => true,
                 ]);
+                Posts::prime($latest);
+                $context['latest_posts'] = $latest;
                 $context['posts_page_link'] = $this->postsPageLink();
             }
 

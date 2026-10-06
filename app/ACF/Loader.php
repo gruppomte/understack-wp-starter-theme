@@ -9,8 +9,9 @@ use Understack\Support\Registrable;
 
 /**
  * Loads the ACF PRO copy bundled in includes/acf when no ACF plugin is active.
- * The license is never stored in the theme: activate it through the ACF
- * settings or the ACF_PRO_LICENSE constant in wp-config.php.
+ * The license is never stored in the theme: define ACF_PRO_LICENSE in
+ * wp-config.php (the updates screen is hidden because the bundled copy is
+ * updated through "npm run acf:install").
  */
 final class Loader implements Registrable
 {

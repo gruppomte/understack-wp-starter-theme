@@ -9,6 +9,7 @@ use Twig\Environment;
 use Twig\TwigFunction;
 use Understack\Support\Environment as ThemeEnvironment;
 use Understack\Support\Image;
+use Understack\Support\Posts;
 use Understack\Support\Registrable;
 
 final class Timber implements Registrable
@@ -24,8 +25,8 @@ final class Timber implements Registrable
 
     public function extend(Environment $twig): Environment
     {
-        $twig->addFunction(new TwigFunction('asset', [Assets::class, 'url']));
         $twig->addFunction(new TwigFunction('attachment_image', [Image::class, 'render'], ['is_safe' => ['html']]));
+        $twig->addFunction(new TwigFunction('post_terms', [Posts::class, 'terms']));
 
         return $twig;
     }

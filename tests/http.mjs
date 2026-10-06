@@ -41,6 +41,7 @@ async function check(label, url, expectedStatus) {
   if (!body.includes('id="main-content"')) problems.push('main landmark missing');
   if (!body.includes('skip-link')) problems.push('skip link missing');
   if (!body.includes('public/build/assets/')) problems.push('compiled assets missing');
+  if (!body.includes('--wp--preset--color--ink')) problems.push('theme.json presets missing');
   if (body.includes('localhost:5173') || body.includes('@vite/client'))
     problems.push('dev server reference');
 

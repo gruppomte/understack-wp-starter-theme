@@ -14,6 +14,7 @@ import {
   mkdtempSync,
   readFileSync,
   readdirSync,
+  renameSync,
   rmSync,
   statSync,
 } from 'node:fs';
@@ -26,14 +27,18 @@ const target = join(root, 'includes', 'acf');
 const candidates = ['acf-pro.zip', 'advanced-custom-fields-pro.zip'].map((name) =>
   join(root, name),
 );
-const source = resolve(
-  process.argv[2] ?? candidates.find((candidate) => existsSync(candidate)) ?? '',
-);
+const requested = process.argv[2] ?? candidates.find((candidate) => existsSync(candidate));
+const source = requested ? resolve(requested) : null;
 
 if (!source || !existsSync(source)) {
   console.error(
     'Provide the path to the ACF PRO zip or folder, or place acf-pro.zip in the theme root.',
   );
+  process.exit(1);
+}
+
+if (source === target || source.startsWith(`${target}/`) || source === root) {
+  console.error('The source must be a package outside includes/acf.');
   process.exit(1);
 }
 
@@ -94,11 +99,15 @@ try {
 
   const plugin = validate(pluginRoot);
 
-  rmSync(target, { recursive: true, force: true });
-  cpSync(pluginRoot, target, {
+  // Copy next to the target first so a failed copy never leaves the theme without ACF.
+  const staged = `${target}.new`;
+  rmSync(staged, { recursive: true, force: true });
+  cpSync(pluginRoot, staged, {
     recursive: true,
     filter: (path) => !/(^|\/)(\.DS_Store|__MACOSX)$/.test(path),
   });
+  rmSync(target, { recursive: true, force: true });
+  renameSync(staged, target);
 
   console.log(`${plugin.name} ${plugin.version} installed in includes/acf.`);
 } catch (error) {

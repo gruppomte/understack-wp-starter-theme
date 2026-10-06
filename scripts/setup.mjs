@@ -211,6 +211,17 @@ function replaceIdentifiers(next) {
     ),
   );
 
+  for (const file of walk(root, join(root, 'blocks'))) {
+    if (file.endsWith('block.json')) {
+      editFile(relative(root, file), (content) =>
+        content.replace(
+          new RegExp(`("textdomain":\\s*")${textDomain}(")`),
+          (_, prefix, suffix) => `${prefix}${next.textDomain}${suffix}`,
+        ),
+      );
+    }
+  }
+
   let updated = 0;
 
   for (const file of walk(root)) {
@@ -281,6 +292,7 @@ function applyFeatures(features) {
     }
     removeLines('app/Core/Theme.php', /WooCommerce/);
     removeLines('phpcs.xml.dist', /woocommerce\.php/);
+    removeLines('phpstan.neon.dist', /woocommerce\.php/);
     removeLines('vite.config.js', /woocommerce: 'src\/css\/woocommerce\.css'/);
     removeEmptyDirectory('app/Integrations');
   }
@@ -291,19 +303,7 @@ function applyFeatures(features) {
       content.replace(/\n\s*\{[^{}]*animations\/index\.js[^{}]*\},?/, ''),
     );
     editPackageJson((pkg) => delete pkg.dependencies?.gsap);
-    editFile('src/css/base.css', (content) =>
-      content.replace(
-        /\n\s*\/\*\n\s*\* Elements revealed by the animation module[\s\S]*?opacity: 0;\n\s*\}\n/,
-        '\n',
-      ),
-    );
-    editFile('app/Core/Assets.php', (content) =>
-      content.replace(
-        /\n\s*\.\s*'if\(!window\.matchMedia[^\n]*\n\s*\.\s*'\{document\.documentElement\.classList\.add\("motion"\)\}'/,
-        '',
-      ),
-    );
-    for (const file of walk(root, join(root, 'views'))) {
+    for (const file of [...walk(root, join(root, 'views')), ...walk(root, join(root, 'blocks'))]) {
       editFile(relative(root, file), (content) =>
         content.replace(
           / data-(?:hero-item|hero|animate-stagger|animate|parallax)(?:="[^"]*")?/g,
@@ -316,7 +316,7 @@ function applyFeatures(features) {
   if (!features.alpine) {
     io.remove(join(root, 'src/js/modules/alpine.js'));
     editFile('src/js/app.js', (content) =>
-      content.replace(/import '\.\/modules\/alpine\.js';\n\n?/, ''),
+      content.replace(/\n\s*\{[^{}]*modules\/alpine\.js[^{}]*\},?/, ''),
     );
     editPackageJson((pkg) => delete pkg.dependencies?.alpinejs);
     editFile('src/css/base.css', (content) =>
@@ -334,17 +334,62 @@ function applyFeatures(features) {
   }
 
   if (!features.acf) {
-    for (const path of ['includes/acf', 'acf-json', 'app/ACF']) io.remove(join(root, path));
-    removeLines('app/Core/Theme.php', /\\ACF\\|Acf\w+::class/);
+    for (const path of [
+      'includes/acf',
+      'acf-json',
+      'app/ACF',
+      'app/Blocks',
+      'blocks',
+      'scripts/acf-install.mjs',
+      'scripts/acf-json.php',
+      'tests/smoke-acf.php',
+      'tests/stubs',
+    ]) {
+      io.remove(join(root, path));
+    }
+    removeLines('app/Core/Theme.php', /\\ACF\\|Acf\w+::class|\\Blocks\\|Blocks::class/);
+    removeLines(
+      'phpstan.neon.dist',
+      /- blocks$|acf-json\.php|smoke-acf\.php|acf-pro-stubs|acf\.stub|scanFiles:|stubFiles:/,
+    );
+    // Without ACF the smoke test must not report it as missing.
+    editFile('tests/smoke.php', (content) =>
+      content.replace(
+        /if \(class_exists\('ACF'\)\) \{\n\s*require __DIR__ \. '\/smoke-acf\.php';\n\} else \{\n[\s\S]*?\n\}\n\n?/,
+        '',
+      ),
+    );
+    removeLines('phpcs.xml.dist', /<file>blocks<\/file>/);
+    editPackageJson((pkg) => {
+      for (const script of Object.keys(pkg.scripts ?? {})) {
+        if (script.startsWith('acf:')) delete pkg.scripts[script];
+      }
+    });
+    editFile('composer.json', (content) => {
+      const composer = JSON.parse(content);
+      delete composer['require-dev']?.['php-stubs/acf-pro-stubs'];
+      return `${JSON.stringify(composer, null, 4)}\n`;
+    });
     removeEmptyDirectory('includes');
   } else if (!existsSync(join(root, 'includes/acf/acf.php'))) {
     console.warn('ACF Pro is not bundled yet: run "npm run acf:install -- <path-to-acf-pro.zip>".');
   }
 }
 
-function removeStarterFiles() {
+/** Upper-case Markdown files in the root (README.md, CONTRIBUTING.md, …) are project documentation. */
+const isDocumentation = (entry) => /^[A-Z]+\.md$/.test(entry);
+
+/**
+ * Documentation is kept with the new project name; any other Markdown file in
+ * the root is treated as a copied specification or note and removed.
+ */
+function removeStarterFiles(next) {
   for (const entry of readdirSync(root)) {
-    if (/\.md$/i.test(entry) || entry === '.DS_Store') io.remove(join(root, entry));
+    if (entry === '.DS_Store' || (/\.md$/i.test(entry) && !isDocumentation(entry))) {
+      io.remove(join(root, entry));
+    } else if (isDocumentation(entry)) {
+      editFile(entry, (content) => content.split(current.name).join(next.name));
+    }
   }
 }
 
@@ -445,7 +490,7 @@ if (interactive) {
 
 replaceIdentifiers(next);
 applyFeatures(next.features);
-removeStarterFiles();
+removeStarterFiles(next);
 renameDirectory(next);
 refreshComposerLock(next);
 

@@ -85,6 +85,19 @@ if (options.lint !== false) {
     eslint.status === 0 ? '' : (eslint.stdout + eslint.stderr).trim(),
   );
 
+  const prettier = run(
+    'node',
+    [join(root, 'node_modules/prettier/bin/prettier.cjs'), '--check', '.'],
+    {
+      cwd: root,
+    },
+  );
+  record(
+    'Prettier',
+    prettier.status === 0,
+    prettier.status === 0 ? '' : (prettier.stdout + prettier.stderr).trim(),
+  );
+
   const phpcsBin = join(root, 'vendor/squizlabs/php_codesniffer/bin/phpcs');
 
   if (existsSync(phpcsBin) && commandExists('php')) {
@@ -92,6 +105,21 @@ if (options.lint !== false) {
     record('PHP_CodeSniffer', phpcs.status === 0, phpcs.status === 0 ? '' : phpcs.stdout.trim());
   } else {
     record('PHP_CodeSniffer', false, 'phpcs not installed', true);
+  }
+
+  const phpstanBin = join(root, 'vendor/bin/phpstan');
+
+  if (existsSync(phpstanBin) && commandExists('php')) {
+    const phpstan = run(
+      'php',
+      [phpstanBin, 'analyse', '--no-progress', '--memory-limit=1G', '--error-format=raw'],
+      {
+        cwd: root,
+      },
+    );
+    record('PHPStan', phpstan.status === 0, phpstan.status === 0 ? '' : phpstan.stdout.trim());
+  } else {
+    record('PHPStan', false, 'phpstan not installed', true);
   }
 }
 
@@ -124,7 +152,10 @@ if (options.wp === false || !wpLoad) {
       .map((line) => `       ${line}`)
       .join('\n'),
   );
-  record('WordPress smoke test', result.status === 0);
+  record(
+    'WordPress smoke test',
+    result.status === 0 && result.stdout.includes('Smoke test passed.'),
+  );
 }
 
 // 7. HTTP smoke test
@@ -137,7 +168,10 @@ if (options.url) {
       .map((line) => `       ${line}`)
       .join('\n'),
   );
-  record('HTTP smoke test', result.status === 0);
+  record(
+    'HTTP smoke test',
+    result.status === 0 && result.stdout.includes('HTTP smoke test passed.'),
+  );
 } else {
   record('HTTP smoke test', false, 'pass --url to enable', true);
 }

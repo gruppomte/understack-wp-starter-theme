@@ -48,7 +48,9 @@ final class Setup implements Registrable
         }
 
         // Sizes used by the theme's own templates; "large" stays the default for content.
+        // Two 3:2 crops give card images a real srcset (1x and 2x candidates).
         add_image_size('card', 800, 534, true);
+        add_image_size('card-sm', 400, 267, true);
         add_image_size('wide', 1600);
 
         register_nav_menus([

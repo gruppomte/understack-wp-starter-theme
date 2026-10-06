@@ -7,6 +7,7 @@ namespace Understack\Core;
 use Understack\ACF\Loader as AcfLoader;
 use Understack\ACF\LocalJson as AcfLocalJson;
 use Understack\ACF\OptionsPages as AcfOptionsPages;
+use Understack\Blocks\Blocks;
 use Understack\Context\GlobalContext;
 use Understack\Hooks\Frontend;
 use Understack\Integrations\WooCommerce;
@@ -25,6 +26,7 @@ final class Theme
     private const SERVICES = [
         Setup::class,
         PageTemplates::class,
+        Editor::class,
         Timber::class,
         Assets::class,
         GlobalContext::class,
@@ -32,6 +34,7 @@ final class Theme
         AcfLoader::class,
         AcfLocalJson::class,
         AcfOptionsPages::class,
+        Blocks::class,
         WooCommerce::class,
     ];
 
@@ -48,17 +51,6 @@ final class Theme
         foreach (self::SERVICES as $service) {
             (new $service())->register();
         }
-    }
-
-    public static function version(): string
-    {
-        static $version = null;
-
-        if ($version === null) {
-            $version = (string) wp_get_theme(get_template())->get('Version');
-        }
-
-        return $version;
     }
 
     public static function path(string $relative = ''): string

@@ -9,14 +9,44 @@
       "defaultGradients": false,
       "defaultPalette": false,
       "defaultDuotone": false,
-      "palette": [],
+      "palette": [
+        { "slug": "ink", "name": "Ink", "color": "#1f2024" },
+        { "slug": "ink-muted", "name": "Ink muted", "color": "#64666d" },
+        { "slug": "surface", "name": "Surface", "color": "#ffffff" },
+        { "slug": "surface-muted", "name": "Surface muted", "color": "#f5f5f7" },
+        { "slug": "line", "name": "Line", "color": "#dedfe3" },
+        { "slug": "line-strong", "name": "Line strong", "color": "#8d8f97" },
+        { "slug": "accent", "name": "Accent", "color": "#33363f" },
+        { "slug": "accent-contrast", "name": "Accent contrast", "color": "#ffffff" }
+      ],
       "gradients": [],
       "duotone": []
     },
     "typography": {
       "customFontSize": false,
       "defaultFontSizes": false,
-      "fontSizes": [],
+      "fluid": true,
+      "fontFamilies": [
+        {
+          "slug": "sans",
+          "name": "Sans",
+          "fontFamily": "ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji'"
+        }
+      ],
+      "fontSizes": [
+        { "slug": "sm", "name": "Small", "size": "0.875rem", "fluid": false },
+        { "slug": "base", "name": "Base", "size": "1rem", "fluid": false },
+        { "slug": "lg", "name": "Large", "size": "1.125rem", "fluid": false },
+        { "slug": "xl", "name": "Extra large", "size": "1.25rem", "fluid": false },
+        { "slug": "heading", "name": "Heading", "size": "1.5rem", "fluid": false },
+        { "slug": "title", "name": "Title", "size": "1.875rem", "fluid": false },
+        {
+          "slug": "display",
+          "name": "Display",
+          "size": "3.25rem",
+          "fluid": { "min": "2rem", "max": "3.25rem" }
+        }
+      ],
       "dropCap": false,
       "fontStyle": false,
       "fontWeight": false,
@@ -27,9 +57,21 @@
     },
     "spacing": {
       "customSpacingSize": false,
+      "defaultSpacingSizes": false,
       "margin": false,
       "padding": false,
-      "units": []
+      "blockGap": true,
+      "units": ["px", "rem", "%"],
+      "spacingSizes": [
+        { "slug": "xs", "name": "Extra small", "size": "0.5rem" },
+        { "slug": "sm", "name": "Small", "size": "1rem" },
+        { "slug": "md", "name": "Medium", "size": "2rem" },
+        { "slug": "lg", "name": "Large", "size": "4rem" },
+        { "slug": "xl", "name": "Extra large", "size": "6rem" }
+      ]
+    },
+    "shadow": {
+      "defaultPresets": false
     },
     "layout": {
       "contentSize": "48rem",

@@ -1,0 +1,17 @@
+/* Shared component utilities; usable with @apply from any stylesheet or entry. */
+@utility btn {
+  @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-md border px-4 py-2 text-sm font-medium transition-colors motion-reduce:transition-none;
+}
+
+@utility btn-primary {
+  @apply border-accent bg-accent text-accent-contrast hover:border-ink hover:bg-ink;
+}
+
+@utility btn-secondary {
+  @apply border-line-strong bg-surface text-ink hover:bg-surface-muted;
+}
+
+/* Form control: the border is the only boundary, so it must reach 3:1 contrast. */
+@utility field {
+  @apply rounded-md border border-line-strong bg-surface px-3 py-2 text-ink;
+}

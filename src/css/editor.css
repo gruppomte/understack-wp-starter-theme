@@ -1,15 +1,19 @@
 /*
  * Block editor stylesheet: design tokens and the shared content typography so
- * the editor mirrors the front end. Loaded through add_editor_style().
+ * the editor mirrors the front end. Loaded through add_editor_style(); the
+ * --wp--preset-* values come from theme.json inside the editor as well.
  */
+/* Cascade layer order: declared first in every entry so a block or plugin stylesheet printed before the main one cannot reorder it. */
+@layer theme, base, components, utilities;
+
 @import 'tailwindcss/theme' layer(theme);
 @import 'tailwindcss/utilities' layer(utilities) source(none);
 @import './theme.css';
 @import './content.css';
 
 .editor-styles-wrapper {
-  font-family: var(--font-sans);
-  color: var(--color-ink);
-  background-color: var(--color-surface);
+  font-family: var(--wp--preset--font-family--sans);
+  color: var(--wp--preset--color--ink);
+  background-color: var(--wp--preset--color--surface);
   -webkit-font-smoothing: antialiased;
 }
