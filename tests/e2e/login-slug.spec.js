@@ -39,8 +39,12 @@ test.describe('login slug', () => {
     expect(page.url()).not.toContain('wp-login.php');
   });
 
-  test('redirect_to, admin access and logout stay on the slug', async ({ page }) => {
+  test('redirect_to, admin access and logout stay on the slug', async ({ page, isMobile }) => {
     test.skip(!account, 'needs the Playground test account');
+    // WordPress stores session tokens with a read-modify-write on user meta:
+    // two projects logging in as the same user at the same time can lose a
+    // session. The admin flow is layout-independent, so one project is enough.
+    test.skip(isMobile, 'runs on the desktop project only');
 
     await page.goto(`/${slug}/?redirect_to=${encodeURIComponent('/about/')}`);
     await page.fill('#user_login', account.user);
