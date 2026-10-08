@@ -32,6 +32,7 @@
         "lint": "phpcs",
         "lint:fix": "phpcbf",
         "analyse": "phpstan analyse --memory-limit=1G",
-        "test": "php tests/smoke.php"
+        "test": "php tests/smoke.php",
+        "test:unit": "php tests/unit/run.php"
     }
 }

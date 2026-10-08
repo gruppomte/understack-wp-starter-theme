@@ -144,6 +144,30 @@ $check(
     in_array('full-width', $pageTemplates, true) && in_array('landing', $pageTemplates, true)
 );
 
+$seo = Understack\Seo\Seo::current();
+$check('SEO foundation registered', $seo instanceof Understack\Seo\Seo);
+
+if ($seo instanceof Understack\Seo\Seo) {
+    $check('SEO configuration valid', $seo->config()->issues() === [], implode('; ', $seo->config()->issues()));
+
+    $verdict = $seo->environment();
+    $nonProduction = in_array(wp_get_environment_type(), ['local', 'development', 'staging'], true);
+    $check(
+        'SEO environment policy',
+        $verdict->noindex === $nonProduction
+            || $seo->config()->string('indexability.non_production') === 'off'
+            || $verdict->warnings !== [],
+        sprintf('%s → %s', $verdict->type, $verdict->noindex ? 'noindex' : 'indexable')
+    );
+
+    $report = (new Understack\Seo\Diagnostics\Report($seo))->build();
+    $check(
+        'SEO diagnostics report',
+        isset($report['ownership']['canonical'], $report['provider']['id'], $report['sitemap']['owner']),
+        'provider ' . $report['provider']['label']
+    );
+}
+
 if (class_exists('ACF')) {
     require __DIR__ . '/smoke-acf.php';
 } else {

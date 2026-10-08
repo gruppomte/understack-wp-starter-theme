@@ -6,16 +6,19 @@ parameters:
     tmpDir: .phpstan-cache
     paths:
         - app
+        - config
         - blocks
         - functions.php
         - index.php
         - woocommerce.php
         - tests/smoke.php
         - tests/smoke-acf.php
+        - tests/unit
         - scripts/acf-json.php
         - site
     scanFiles:
         - vendor/php-stubs/acf-pro-stubs/acf-pro-stubs.php
+        - tests/stubs/wp-cli.stub
     stubFiles:
         - tests/stubs/acf.stub
     treatPhpDocTypesAsCertain: false

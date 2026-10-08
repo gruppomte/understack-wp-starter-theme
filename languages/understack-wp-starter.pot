@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Understack WP Starter 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-06T15:39:08+00:00\n"
+"POT-Creation-Date: 2026-10-08T07:23:38+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -45,6 +45,58 @@ msgstr ""
 
 #: app/Core/Setup.php:58
 msgid "Footer navigation"
+msgstr ""
+
+#: app/Seo/Diagnostics/SiteHealth.php:38
+msgid "Environment"
+msgstr ""
+
+#: app/Seo/Diagnostics/SiteHealth.php:43
+msgid "declared"
+msgstr ""
+
+#: app/Seo/Diagnostics/SiteHealth.php:44
+msgid "not declared, assumed"
+msgstr ""
+
+#: app/Seo/Diagnostics/SiteHealth.php:49
+msgid "Indexability policy"
+msgstr ""
+
+#: app/Seo/Diagnostics/SiteHealth.php:51
+msgid "noindex, nofollow on every page (non-production environment)"
+msgstr ""
+
+#: app/Seo/Diagnostics/SiteHealth.php:52
+msgid "indexable"
+msgstr ""
+
+#: app/Seo/Diagnostics/SiteHealth.php:56
+msgid "SEO plugin"
+msgstr ""
+
+#: app/Seo/Diagnostics/SiteHealth.php:62
+msgid "Owner of %s"
+msgstr ""
+
+#: app/Seo/Diagnostics/SiteHealth.php:67
+msgid "XML sitemap"
+msgstr ""
+
+#: app/Seo/Diagnostics/SiteHealth.php:72
+msgid "Warnings"
+msgstr ""
+
+#: app/Seo/Diagnostics/SiteHealth.php:73
+msgid "none"
+msgstr ""
+
+#: app/Seo/Diagnostics/SiteHealth.php:77
+msgid "SEO foundation"
+msgstr ""
+
+#: app/Seo/Diagnostics/SiteHealth.php:78
+msgid "Who emits each SEO signal, the environment policy and the configuration warnings."
 msgstr ""
 
 #: blocks/hero/block.twig:15

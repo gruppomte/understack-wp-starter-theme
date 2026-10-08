@@ -16,6 +16,8 @@ if (get_option('theme_playground_seeded')) {
 update_option('blogname', 'Playground');
 update_option('blogdescription', 'Theme verification site');
 update_option('page_comments', 1);
+// Two posts per page so listings paginate (canonical and description checks on /page/2/).
+update_option('posts_per_page', 2);
 update_option('comments_per_page', 2);
 update_option('thread_comments', 1);
 

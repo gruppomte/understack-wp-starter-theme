@@ -4,7 +4,10 @@
  * Docker, no database server) with sample content from tests/playground/seed.php.
  * Used by the end-to-end tests locally and in CI.
  *
- *   npm run wp:playground [-- --port 9400 --php 8.3 --wp latest --no-login]
+ *   npm run wp:playground [-- --port 9400 --php 8.3 --wp latest --no-login --env staging]
+ *
+ * --env declares WP_ENVIRONMENT_TYPE inside the Playground (production when omitted),
+ * which is how the end-to-end suite verifies the staging indexability policy.
  *
  * Requires vendor/ and public/build/ (composer install, npm run build).
  */
@@ -32,6 +35,7 @@ for (const [path, hint] of [
 
 const folder = basename(root);
 const env = readLocalEnv(root);
+const environmentType = options.env ? String(options.env) : null;
 const loginSlugPlugin = join(root, 'site/mu-plugins/login-slug.php');
 const steps = [
   { step: 'activateTheme', themeFolderName: folder },
@@ -40,16 +44,20 @@ const steps = [
 
 // Same login address as a local site: the mu-plugin plus its wp-config constant,
 // installed last so the setup steps above are not treated as visitor requests.
+const consts = {};
+
+if (environmentType) consts.WP_ENVIRONMENT_TYPE = environmentType;
+
 if (existsSync(loginSlugPlugin)) {
-  steps.push(
-    {
-      step: 'writeFile',
-      path: '/wordpress/wp-content/mu-plugins/login-slug.php',
-      data: readFileSync(loginSlugPlugin, 'utf8'),
-    },
-    { step: 'defineWpConfigConsts', consts: { WP_LOGIN_SLUG: env.WP_LOGIN_SLUG || '_admin' } },
-  );
+  steps.push({
+    step: 'writeFile',
+    path: '/wordpress/wp-content/mu-plugins/login-slug.php',
+    data: readFileSync(loginSlugPlugin, 'utf8'),
+  });
+  consts.WP_LOGIN_SLUG = env.WP_LOGIN_SLUG || '_admin';
 }
+
+if (Object.keys(consts).length > 0) steps.push({ step: 'defineWpConfigConsts', consts });
 
 const blueprint = {
   $schema: 'https://playground.wordpress.net/blueprint-schema.json',

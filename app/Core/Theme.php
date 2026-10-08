@@ -11,6 +11,7 @@ use Understack\Blocks\Blocks;
 use Understack\Context\GlobalContext;
 use Understack\Hooks\Frontend;
 use Understack\Integrations\WooCommerce;
+use Understack\Seo\Seo;
 use Understack\Support\Registrable;
 
 /**
@@ -36,6 +37,7 @@ final class Theme
         AcfOptionsPages::class,
         Blocks::class,
         WooCommerce::class,
+        Seo::class,
     ];
 
     private static bool $booted = false;
