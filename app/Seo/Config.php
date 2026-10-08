@@ -323,7 +323,7 @@ final class Config
 
     private static function key(string $value): ?string
     {
-        return preg_match('/^[a-z0-9_-]+$/i', $value) === 1 ? strtolower($value) : null;
+        return strlen($value) <= 64 && preg_match('/^[a-z0-9_-]+$/i', $value) === 1 ? strtolower($value) : null;
     }
 
     /**

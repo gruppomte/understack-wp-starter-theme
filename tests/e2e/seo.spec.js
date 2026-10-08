@@ -269,3 +269,32 @@ test('the theme emits no hreflang links without a multilingual plugin', async ({
 
   await expect(page.locator('link[rel="alternate"][hreflang]')).toHaveCount(0);
 });
+
+test.describe('hostile editorial content', () => {
+  test('markup in the title, excerpt and content never reaches the head unescaped', async ({
+    page,
+  }) => {
+    const response = await page.goto('/hostile-post/');
+    const html = await response.text();
+    const head = html.match(/<head[\s\S]*?<\/head>/i)[0];
+
+    expect(head).not.toContain('<script>alert');
+    expect(head).not.toContain('onerror=');
+    expect(head).not.toMatch(/<meta[^>]*content="[^"]*<script/i);
+    expect(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)).toHaveLength(
+      1,
+    );
+
+    const graph = await inspectJsonLd(page);
+    expect(graph.dangling).toEqual([]);
+    expect(graph.raw).not.toContain('</script');
+    expect(graph.raw).not.toContain('<');
+    // WordPress texturises the quotes; the script tag is gone and the ampersand is plain text.
+    expect(graph.byType('BlogPosting').headline).toBe('Hostile post & \u201cquotes\u201d');
+
+    const headInfo = await inspectHead(page, '/hostile-post/');
+    expect(headInfo.descriptions).toEqual(['Excerpt with markup & entities']);
+    expect(headInfo.og['og:description']).toBe('Excerpt with markup & entities');
+    expect(headInfo.og['og:title']).not.toContain('<');
+  });
+});

@@ -166,6 +166,23 @@ if (function_exists('update_field')) {
     }
 }
 
+// Security fixture: markup in editorial fields must never reach the head unescaped.
+// Inserted as the administrator (unfiltered_html) so the markup is stored as written.
+wp_set_current_user(1);
+$hostile = (int) wp_insert_post([
+    'post_type' => 'post',
+    'post_status' => 'publish',
+    'post_title' => 'Hostile post <script>alert("title")</script> & "quotes"',
+    'post_name' => 'hostile-post',
+    'post_excerpt' => 'Excerpt </script><script>alert("excerpt")</script> with <b>markup</b> & entities',
+    'post_content' => '<!-- wp:paragraph --><p>Body <img src=x onerror=alert(1)> of the hostile post.</p>'
+        . '<!-- /wp:paragraph -->',
+    'post_category' => [$categoryId],
+    'post_author' => (int) $alice,
+]);
+update_post_meta($hostile, '_wp_attachment_image_alt', '"><script>alert("alt")</script>');
+wp_set_current_user(0);
+
 foreach (['Alice', 'Bob', 'Carla'] as $index => $author) {
     wp_insert_comment([
         'comment_post_ID' => $postIds[0],
