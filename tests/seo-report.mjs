@@ -86,8 +86,30 @@ function inspect(html) {
     }
   });
   const body = html.replace(/<head[\s\S]*?<\/head>/i, '');
+  const headings = [...body.matchAll(/<h([1-6])\b[^>]*>/gi)].map((match) => Number(match[1]));
+  const skippedLevels = headings.filter(
+    (level, index) => index > 0 && level > headings[index - 1] + 1,
+  ).length;
+  const images = [...body.matchAll(/<img\b[^>]*>/gi)].map((match) => attributes(match[0]));
+  const anchors = [...body.matchAll(/<a\b[^>]*>/gi)].map((match) => attributes(match[0]));
 
   return {
+    lang: attributes(html.match(/<html\b[^>]*>/i)?.[0] ?? '').lang ?? '',
+    headings: {
+      outline: headings,
+      h1: headings.filter((level) => level === 1).length,
+      skippedLevels,
+    },
+    images: {
+      total: images.length,
+      withoutAlt: images.filter((image) => !('alt' in image)).length,
+    },
+    links: {
+      total: anchors.length,
+      empty: anchors.filter(
+        (link) => !link.href || link.href === '#' || link.href.startsWith('javascript:'),
+      ).length,
+    },
     title: decode(head.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1] ?? '').trim(),
     descriptions: pick('name', 'description'),
     canonicals: links
@@ -174,6 +196,12 @@ const duplicates = results.flatMap((result) =>
     result.twitterDuplicates > 0 ? 'twitter' : null,
     result.jsonLd.length > 1 ? 'json-ld blocks' : null,
     result.h1 !== 1 ? `h1 (${result.h1})` : null,
+    result.headings.skippedLevels > 0
+      ? `skipped heading levels (${result.headings.skippedLevels})`
+      : null,
+    result.images.withoutAlt > 0 ? `images without alt (${result.images.withoutAlt})` : null,
+    result.links.empty > 0 ? `links without a real href (${result.links.empty})` : null,
+    result.lang === '' ? 'html lang missing' : null,
   ]
     .filter(Boolean)
     .map((signal) => `${result.name}: ${signal}`),
@@ -203,10 +231,10 @@ const lines = [
   '',
   `Site: ${base} · Generated: ${report.generated} · Providers seen: ${
     [...new Set(results.flatMap((result) => result.providers))].join(', ') || 'none'
-  }`,
+  } · html lang: ${results[0]?.lang || 'missing'}`,
   '',
-  '| Route | Status | Robots meta | X-Robots-Tag | Description | Canonical | OG | Twitter | JSON-LD | h1 | Landmarks |',
-  '| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |',
+  '| Route | Status | Robots meta | X-Robots-Tag | Description | Canonical | OG | Twitter | JSON-LD | h1 | Landmarks | Headings | Images | Links |',
+  '| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |',
 ];
 
 for (const result of results) {
@@ -223,6 +251,9 @@ for (const result of results) {
       result.jsonLd.length,
       result.h1,
       result.landmarks.join(', '),
+      `${result.headings.outline.join('')}${result.headings.skippedLevels ? ' (skips)' : ''}`,
+      `${result.images.total}${result.images.withoutAlt ? ` (${result.images.withoutAlt} no alt)` : ''}`,
+      `${result.links.total}${result.links.empty ? ` (${result.links.empty} empty)` : ''}`,
     ]
       .map(cell)
       .join(' | ')} |`,

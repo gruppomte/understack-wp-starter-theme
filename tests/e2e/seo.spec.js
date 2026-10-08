@@ -263,3 +263,9 @@ test.describe('breadcrumbs disabled by default', () => {
     });
   }
 });
+
+test('the theme emits no hreflang links without a multilingual plugin', async ({ page }) => {
+  await page.goto('/sample-post-1/');
+
+  await expect(page.locator('link[rel="alternate"][hreflang]')).toHaveCount(0);
+});

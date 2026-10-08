@@ -40,13 +40,23 @@ test('staging 404 pages carry the header too', async ({ page }) => {
   expect(head.headers['x-robots-tag']).toBe('noindex, nofollow');
 });
 
-test('robots.txt is never used to hide a staging site', async ({ request }) => {
+test('robots.txt keeps the core block and appends the configured crawler groups', async ({
+  request,
+  baseURL,
+}) => {
   const response = await request.get('/robots.txt');
   const body = await response.text();
 
   expect(response.status()).toBe(200);
-  expect(body).not.toMatch(/^Disallow: \/$/m);
   expect(response.headers()['x-robots-tag']).toBe('noindex, nofollow');
+  expect(body).toMatch(
+    /^User-agent: \*\nDisallow: \/wp-admin\/\nAllow: \/wp-admin\/admin-ajax\.php/,
+  );
+  expect(body).toContain(`Sitemap: ${baseURL}/wp-sitemap.xml`);
+  expect(body).toMatch(
+    /\n\nUser-agent: ExampleTrainingBot\nDisallow: \/\n\nUser-agent: \*\nDisallow: \/private\/\nCrawl-delay: 5\n$/,
+  );
+  expect(body.indexOf('Sitemap:')).toBeLessThan(body.indexOf('ExampleTrainingBot'));
 });
 
 test('the core sitemap keeps working on staging', async ({ request }) => {
@@ -79,7 +89,9 @@ test.describe('breadcrumbs enabled', () => {
       [2, 'About us', `${baseURL}/about/`],
       [3, 'Team', null],
     ]);
-    expect(graph.byType('WebPage').breadcrumb).toEqual({ '@id': list['@id'] });
+    // The WPML mock types this page as ContactPage; the page node is found by its identifier.
+    const pageNode = graph.nodes.find((node) => node['@id']?.endsWith('#webpage'));
+    expect(pageNode.breadcrumb).toEqual({ '@id': list['@id'] });
     expect(graph.dangling).toEqual([]);
   });
 
@@ -138,5 +150,26 @@ test.describe('breadcrumbs enabled', () => {
     const graph = await inspectJsonLd(page);
 
     expect(graph.byType('Person').url).toBe(`${baseURL}/author/alice/`);
+  });
+});
+
+test.describe('WPML mock', () => {
+  test('a configured page ID is mapped to its translation before typing the page', async ({
+    page,
+  }) => {
+    await page.goto('/about/team/');
+    const graph = await inspectJsonLd(page);
+
+    expect(graph.types).toContain('ContactPage');
+    expect(graph.types).not.toContain('WebPage');
+
+    await page.goto('/contact/');
+    expect((await inspectJsonLd(page)).types).toContain('ContactPage');
+  });
+
+  test('the theme emits no hreflang links of its own', async ({ page }) => {
+    await page.goto('/');
+
+    await expect(page.locator('link[rel="alternate"][hreflang]')).toHaveCount(0);
   });
 });

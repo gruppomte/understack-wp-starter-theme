@@ -34,7 +34,7 @@ export default defineConfig({
   },
   projects: [
     { name: 'desktop', use: { ...devices['Desktop Chrome'] }, testIgnore: /seo-staging/ },
-    { name: 'mobile', use: { ...devices['Pixel 7'] }, testIgnore: /seo/ },
+    { name: 'mobile', use: { ...devices['Pixel 7'] }, testIgnore: /seo|semantics/ },
     ...(seoEnvironment === 'playground' || seoEnvironment === 'staging'
       ? [
           {
