@@ -39,12 +39,15 @@ final class Head
         $context = $this->seo->context();
         $config = $this->seo->config();
         $ownership = $this->seo->ownership();
+        $allowed = $this->seo->allowances();
 
-        $description = $ownership->themeOwns(Signal::Description) ? Description::resolve($context) : '';
+        $description = $ownership->themeOwns(Signal::Description) && $allowed['description']
+            ? Description::resolve($context)
+            : '';
         $canonical = $ownership->themeOwns(Signal::Canonical) ? Canonical::resolve($context) : null;
         $social = [];
 
-        if ($ownership->themeOwns(Signal::Social) && $context->isIndexable()) {
+        if ($ownership->themeOwns(Signal::Social) && $allowed['social'] && $context->isIndexable()) {
             $url = $canonical;
 
             if ($url === null && $context->isSingular()) {
@@ -57,19 +60,11 @@ final class Head
 
         $jsonld = '';
 
-        if ($ownership->themeOwns(Signal::StructuredData) && $context->isIndexable() && ! self::isWooCommercePage()) {
+        if ($ownership->themeOwns(Signal::StructuredData) && $allowed['graph'] && $context->isIndexable()) {
             $jsonld = Serializer::encode(Graph::build((new Collector($this->seo))->collect()));
         }
 
         return ['description' => $description, 'canonical' => $canonical, 'social' => $social, 'jsonld' => $jsonld];
-    }
-
-    /**
-     * WooCommerce emits its own WebSite, BreadcrumbList and Product nodes on shop pages.
-     */
-    private static function isWooCommercePage(): bool
-    {
-        return function_exists('is_woocommerce') && is_woocommerce();
     }
 
     public function render(): void

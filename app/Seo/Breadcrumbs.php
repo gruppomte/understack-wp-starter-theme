@@ -29,7 +29,11 @@ final class Breadcrumbs
      */
     public function items(): array
     {
-        if (! $this->seo->config()->bool('breadcrumbs.enabled') || ! $this->seo->isFrontEnd()) {
+        if (
+            ! $this->seo->config()->bool('breadcrumbs.enabled')
+            || ! $this->seo->isFrontEnd()
+            || ! $this->seo->allowances()['breadcrumbs']
+        ) {
             return [];
         }
 

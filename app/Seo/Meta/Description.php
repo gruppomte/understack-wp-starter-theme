@@ -60,6 +60,13 @@ final class Description
 
     private static function forPostTypeArchive(PageContext $context): string
     {
+        // The WooCommerce shop is a static page; its own content describes it, not the plugin's internal text.
+        if ($context->postType === 'product' && function_exists('wc_get_page_id')) {
+            $shop = (int) wc_get_page_id('shop');
+
+            return $shop > 0 ? self::fromPost(get_post($shop)) : '';
+        }
+
         $type = get_post_type_object($context->postType);
 
         return $type !== null ? self::summary((string) $type->description) : '';

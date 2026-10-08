@@ -9,6 +9,8 @@ use Twig\TwigFunction;
 use Understack\Seo\Crawlers\Policy as CrawlerPolicy;
 use Understack\Seo\Diagnostics\Command;
 use Understack\Seo\Diagnostics\SiteHealth;
+use Understack\Seo\Integrations\WooCommerce;
+use Understack\Seo\Integrations\Wpml;
 use Understack\Seo\Identity\Identity;
 use Understack\Seo\Identity\Repository;
 use Understack\Seo\Indexability\Environment;
@@ -41,6 +43,9 @@ final class Seo implements Registrable
 
     private ?Breadcrumbs $breadcrumbs = null;
 
+    /** @var array{description: bool, social: bool, graph: bool, breadcrumbs: bool}|null */
+    private ?array $allowances = null;
+
     public static function current(): ?self
     {
         return self::$current;
@@ -65,6 +70,7 @@ final class Seo implements Registrable
         add_filter('timber/twig', [$this, 'extendTwig']);
         (new Sitemap($this))->register();
         (new CrawlerPolicy($this))->register();
+        (new Wpml())->register();
         (new SiteHealth($this))->register();
 
         if (defined('WP_CLI') && constant('WP_CLI') && class_exists('WP_CLI')) {
@@ -97,6 +103,19 @@ final class Seo implements Registrable
     public function environment(): Verdict
     {
         return $this->environment ??= Environment::current($this->config());
+    }
+
+    /**
+     * What the theme may emit on this page given its WooCommerce role.
+     *
+     * @return array{description: bool, social: bool, graph: bool, breadcrumbs: bool}
+     */
+    public function allowances(): array
+    {
+        return $this->allowances ??= WooCommerce::allowances(
+            WooCommerce::isShopPage(),
+            WooCommerce::isTransactionalPage()
+        );
     }
 
     public function identity(): Identity
