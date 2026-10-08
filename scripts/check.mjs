@@ -128,7 +128,8 @@ const scanResult = scan(root, { strict: Boolean(options.strict) });
 record('Residue scan', scanResult.violations.length === 0, formatReport(scanResult).split('\n')[0]);
 
 // 6. Tooling tests (node:test)
-const scriptTests = run('node', ['--test', 'tests/scripts/'], { cwd: root });
+// A glob instead of a directory: Node 22 does not expand directories passed to --test.
+const scriptTests = run('node', ['--test', 'tests/scripts/*.test.mjs'], { cwd: root });
 record(
   'Tooling tests',
   scriptTests.status === 0,
