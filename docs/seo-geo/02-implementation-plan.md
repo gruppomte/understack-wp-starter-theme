@@ -1,6 +1,6 @@
 # SEO/GEO Foundation — Phase 0: Implementation Plan
 
-Date: 2026-10-08 · Branch: `feature/seo-geo-foundation` (from `v2027.1`, commit `8308adb`) · Status: approved on 2026-10-08 with decisions D-01…D-12 at their recommended defaults; Increment A (Phases 1–3) implemented, see `03-configuration.md` and section 15. Companion documents: `00-audit.md` (measured baseline) and `01-ownership-matrix.md` (who owns each signal).
+Date: 2026-10-08 · Branch: `feature/seo-geo-foundation` (from `v2027.1`, commit `8308adb`) · Status: approved on 2026-10-08 with decisions D-01…D-12 at their recommended defaults; Increments A (Phases 1–3) and B (Phase 4) implemented, see `03-configuration.md`, `04-structured-data.md` and sections 15–16. Companion documents: `00-audit.md` (measured baseline) and `01-ownership-matrix.md` (who owns each signal).
 
 ## 1. Goal and success criteria
 
@@ -255,3 +255,14 @@ Implemented as planned with these deviations, each verified:
 - Diagnostics: Site Health → Info section and `wp <slug> seo report`; the Rank Math "setup not completed" hint reads the plugin's registration option without modifying it.
 - Tests added: unit runner (`composer test:unit`, 36 tests), tooling tests (`npm run test:scripts`), Playwright SEO specs on a production and a staging Playground, SEO checks in `tests/smoke.php`, the head report script and the three local head reports in `08-head-reports/`.
 - Tooling: `config/` ships in the release ZIP; `docs/` is development-only for the residue scan; CI runs the unit tests in the PHP job and the tooling tests through `scripts/check.mjs`.
+
+## 16. Increment B outcome (2026-10-08)
+
+Implemented as planned with these deviations, each verified:
+
+- Identity fields follow the approved list (type, public and legal name, description, logo, website URL, e-mail, telephone, separate address fields, areas served, official profiles); geo coordinates, opening hours and price range were not requested and were left out.
+- `SearchAction` on the WebSite node was dropped: Google retired the sitelinks search box.
+- The breadcrumb trail is exposed to Twig through a `breadcrumbs()` function registered by the SEO service, because the page header section is included with `only` from several templates; the include lives in `sections/page-header.twig` and in the single post header.
+- A profile page falls back to `CollectionPage` when the author's name is not public, so no ProfilePage exists without a main entity.
+- The staging Playground also runs `tests/playground/seo-features.php` (breadcrumbs and author profiles on) so both the default and the enabled states are covered by the same CI run.
+- Tests added: unit (identity, types, author privacy, graph, serializer, breadcrumbs, ownership of the new signals), end-to-end (graph on real pages, privacy, page types, logo, breadcrumbs disabled and enabled, profile pages), smoke (identity read, graph integrity); head reports regenerated with a sample identity.

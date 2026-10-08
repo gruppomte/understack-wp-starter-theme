@@ -1,6 +1,6 @@
-# Head report: Local site, Yoast SEO 28.6 active, WP_ENVIRONMENT_TYPE=local
+# Head report: Local site, Yoast SEO 28.6 active, WP_ENVIRONMENT_TYPE=local, sample organisation identity
 
-Site: http://localhost:10034 · Generated: 2026-10-08T07:29:13.348Z · Providers seen: Yoast SEO
+Site: http://localhost:10034 · Generated: 2026-10-08T08:33:07.186Z · Providers seen: Yoast SEO
 
 | Route | Status | Robots meta | X-Robots-Tag | Description | Canonical | OG | Twitter | JSON-LD | h1 | Landmarks |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -68,7 +68,7 @@ Site: http://localhost:10034 · Generated: 2026-10-08T07:29:13.348Z · Providers
 - Twitter: twitter:card=summary_large_image; twitter:title=You searched for a - understack-wp-theme
 - JSON-LD: CollectionPage, SearchResultsPage, BreadcrumbList, WebSite
 
-### 404 (http://localhost:10034/1791444553051-not-found/)
+### 404 (http://localhost:10034/1791448386981-not-found/)
 
 - Title: Page not found - understack-wp-theme
 - Description: —

@@ -1,6 +1,6 @@
-# Head report: Local site, Rank Math 1.0.280 active, WP_ENVIRONMENT_TYPE=local
+# Head report: Local site, Rank Math 1.0.280 active, WP_ENVIRONMENT_TYPE=local, sample organisation identity
 
-Site: http://localhost:10034 · Generated: 2026-10-08T07:29:11.403Z · Providers seen: Rank Math
+Site: http://localhost:10034 · Generated: 2026-10-08T08:33:05.430Z · Providers seen: Rank Math
 
 | Route | Status | Robots meta | X-Robots-Tag | Description | Canonical | OG | Twitter | JSON-LD | h1 | Landmarks |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -68,7 +68,7 @@ Site: http://localhost:10034 · Generated: 2026-10-08T07:29:11.403Z · Providers
 - Twitter: twitter:card=summary_large_image; twitter:title=a - understack-wp-theme
 - JSON-LD: Person, WebSite, SearchResultsPage
 
-### 404 (http://localhost:10034/1791444551169-not-found/)
+### 404 (http://localhost:10034/1791448385205-not-found/)
 
 - Title: Page Not Found - understack-wp-theme
 - Description: —
