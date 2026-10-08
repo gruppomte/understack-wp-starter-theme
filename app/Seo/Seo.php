@@ -6,6 +6,7 @@ namespace Understack\Seo;
 
 use Twig\Environment as TwigEnvironment;
 use Twig\TwigFunction;
+use Understack\Seo\Crawlers\Policy as CrawlerPolicy;
 use Understack\Seo\Diagnostics\Command;
 use Understack\Seo\Diagnostics\SiteHealth;
 use Understack\Seo\Identity\Identity;
@@ -63,6 +64,7 @@ final class Seo implements Registrable
         add_filter('get_canonical_url', [Canonical::class, 'withoutImplicitCommentPage'], 10, 2);
         add_filter('timber/twig', [$this, 'extendTwig']);
         (new Sitemap($this))->register();
+        (new CrawlerPolicy($this))->register();
         (new SiteHealth($this))->register();
 
         if (defined('WP_CLI') && constant('WP_CLI') && class_exists('WP_CLI')) {

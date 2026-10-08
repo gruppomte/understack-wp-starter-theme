@@ -57,6 +57,10 @@ final class Config
             'enabled' => false,
             'home_label' => '',
         ],
+        'crawlers' => [
+            'policy' => 'unset',
+            'groups' => [],
+        ],
     ];
 
     /** @var array<string, array{0: string, 1?: string[]}> Validation rule per dotted key. */
@@ -90,6 +94,8 @@ final class Config
         'structured_data.author_profiles' => ['bool'],
         'breadcrumbs.enabled' => ['bool'],
         'breadcrumbs.home_label' => ['text'],
+        'crawlers.policy' => ['enum', ['unset', 'open', 'custom']],
+        'crawlers.groups' => ['groups'],
     ];
 
     /**
@@ -285,6 +291,7 @@ final class Config
             'hosts' => self::stringList($value, static fn (string $item): ?string => Text::host($item) ?: null),
             'handle' => self::handle($value),
             'text' => self::text($value),
+            'groups' => is_array($value) && $value === [] ? [] : Crawlers\Groups::normalise($value),
             default => null,
         };
     }

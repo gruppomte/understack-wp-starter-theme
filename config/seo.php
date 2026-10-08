@@ -34,6 +34,11 @@
  *   author archive URLs in Person nodes.
  * - breadcrumbs.enabled (false): breadcrumb trail in the page header and the
  *   BreadcrumbList node; breadcrumbs.home_label (""): label of the first item.
+ * - crawlers.policy ("unset"): the owner's decision on crawlers, AI training
+ *   crawlers included: "unset" (reported by the diagnostics), "open" (robots.txt
+ *   untouched by choice) or "custom" (crawlers.groups appended to robots.txt).
+ * - crawlers.groups ([]): list of ["agents" => [...], "allow" => [...],
+ *   "disallow" => [...], "crawl_delay" => seconds]; see docs/seo-geo/05-crawler-policy.md.
  */
 
 declare(strict_types=1);
