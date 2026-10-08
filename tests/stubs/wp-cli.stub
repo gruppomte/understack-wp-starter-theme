@@ -26,6 +26,14 @@ namespace {
         public static function success(string $message): void
         {
         }
+
+        /**
+         * @return never
+         */
+        public static function halt(int $code): void
+        {
+            exit($code);
+        }
     }
 }
 

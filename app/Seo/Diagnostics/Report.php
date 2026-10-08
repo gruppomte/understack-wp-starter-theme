@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace Understack\Seo\Diagnostics;
 
+use Understack\Seo\Crawlers\Groups;
+use Understack\Seo\Integrations\WooCommerce;
+use Understack\Seo\Integrations\Wpml;
 use Understack\Seo\Provider;
 use Understack\Seo\Seo;
 use Understack\Seo\Signal;
 
 /**
- * Read-only diagnostics: environment verdict, detected provider, ownership of
- * each signal, sitemap owner and configuration issues.
+ * Read-only diagnostics: the facts of the current site and the checks
+ * derived from them (PASS, WARNING, FAIL, NOT VERIFIED). No network access.
  */
 final class Report
 {
@@ -23,86 +26,54 @@ final class Report
      */
     public function build(): array
     {
-        $config = $this->seo->config();
-        $provider = $this->seo->provider();
-        $environment = $this->seo->environment();
-        $ownership = $this->seo->ownership();
-        $warnings = $environment->warnings;
-        $detected = Provider::detect('defined');
+        $facts = $this->facts();
+        $checks = Checks::evaluate($facts);
+        $warnings = [];
 
-        if ((int) get_option('blog_public') === 0) {
-            $warnings[] = 'Search engine visibility is discouraged (blog_public = 0): WordPress adds noindex, '
-                . 'nofollow to every page.';
-        }
-
-        if ($config->string('provider') !== 'auto' && $detected !== $provider) {
-            $warnings[] = sprintf(
-                'The provider is forced to "%s" while the detected plugin is "%s".',
-                $provider->label(),
-                $detected->label()
-            );
-        }
-
-        if ($provider === Provider::RankMath && ! self::rankMathFrontEndEnabled()) {
-            $warnings[] = 'Rank Math is active but its setup is not complete (registration neither done nor '
-                . 'skipped): it prints no SEO tags yet while the theme already leaves those signals to it.';
-        }
-
-        if ($provider !== Provider::None && ! $provider->isVerified()) {
-            $warnings[] = sprintf(
-                '%s is detected but its output was not verified with this theme; '
-                . 'check the head report for duplicates.',
-                $provider->label()
-            );
-        }
-
-        if (is_file(ABSPATH . 'robots.txt')) {
-            $warnings[] = 'A physical robots.txt exists in the WordPress root: it replaces the virtual file and '
-                . 'any rule added by the theme or a plugin.';
-        }
-
-        foreach ($config->issues() as $issue) {
-            $warnings[] = 'Configuration: ' . $issue;
-        }
-
-        $identity = $this->seo->identity();
-
-        foreach ($identity->issues as $issue) {
-            $warnings[] = 'Organisation identity: ' . $issue;
-        }
-
-        if (! $identity->isConfigured() && $ownership->themeOwns(Signal::StructuredData)) {
-            $warnings[] = 'No organisation identity is configured (Site Settings → Organization): the structured data '
-                . 'has a WebSite node but no Organization node and no publisher.';
-        }
-
-        foreach (['about_page' => 'AboutPage', 'contact_page' => 'ContactPage'] as $key => $type) {
-            $id = $config->int('structured_data.' . $key);
-
-            if ($id > 0 && get_post_status($id) !== 'publish') {
-                $warnings[] = sprintf(
-                    'structured_data.%s points to page %d, which is not a published page.',
-                    $key,
-                    $id
-                );
-            } elseif ($id > 0 && get_post_type($id) !== 'page') {
-                $warnings[] = sprintf('structured_data.%s points to %d, which is not a page (%s).', $key, $id, $type);
+        foreach ($checks as $check) {
+            if (in_array($check['status'], [Status::Warning->value, Status::Fail->value], true)) {
+                $warnings[] = $check['label'] . ': ' . $check['detail'];
             }
         }
 
+        return $facts + [
+            'checks' => $checks,
+            'summary' => Checks::summary($checks),
+            'warnings' => $warnings,
+            'config' => $this->seo->config()->all(),
+        ];
+    }
+
+    /**
+     * Everything the checks need, measured from inside WordPress.
+     *
+     * @return array<string, mixed>
+     */
+    public function facts(): array
+    {
+        $config = $this->seo->config();
+        $provider = $this->seo->provider();
+        $detected = Provider::detect('defined');
+        $environment = $this->seo->environment();
+        $ownership = $this->seo->ownership();
+        $identity = $this->seo->identity();
         $constant = $provider->constant();
+        $groups = $config->string('crawlers.policy') === 'custom'
+            ? Groups::normalise($config->get('crawlers.groups'))
+            : [];
 
         return [
-            'environment' => $environment->toArray() + [
-                'blog_public' => (int) get_option('blog_public'),
-                'home' => home_url('/'),
-            ],
+            'environment' => $environment->toArray() + ['home' => home_url('/')],
+            'blog_public' => (int) get_option('blog_public'),
             'provider' => [
                 'id' => $provider->value,
                 'label' => $provider->label(),
                 'version' => $constant !== null && defined($constant) ? (string) constant($constant) : '',
                 'forced' => $config->string('provider') !== 'auto',
+                'detected_id' => $detected->value,
+                'detected_label' => $detected->label(),
                 'verified' => $provider->isVerified(),
+                'dormant' => $provider === Provider::RankMath && ! self::rankMathFrontEndEnabled(),
             ],
             'ownership' => $ownership->toArray(),
             'sitemap' => $this->sitemap(),
@@ -116,6 +87,7 @@ final class Report
                     ? 'complete'
                     : ($identity->hasAnyAddress() ? 'partial' : 'none'),
                 'same_as' => count($identity->sameAs),
+                'issues' => $identity->issues,
             ],
             'structured_data' => [
                 'owner' => $ownership->of(Signal::StructuredData)->value,
@@ -123,13 +95,18 @@ final class Report
                 'contact_page' => $config->int('structured_data.contact_page'),
                 'author_profiles' => $config->bool('structured_data.author_profiles'),
             ],
-            'breadcrumbs' => [
-                'enabled' => $config->bool('breadcrumbs.enabled'),
-                'schema_owner' => $ownership->of(Signal::Breadcrumbs)->value,
+            'page_type_issues' => $this->pageTypeIssues(),
+            'breadcrumbs_enabled' => $config->bool('breadcrumbs.enabled'),
+            'crawlers' => [
+                'policy' => $config->string('crawlers.policy'),
+                'invalid' => $config->string('crawlers.policy') === 'custom' && $groups === null,
+                'groups' => count($groups ?? []),
+                'agents' => Groups::agents($groups ?? []),
             ],
-            'config' => $config->all(),
-            'issues' => $config->issues(),
-            'warnings' => $warnings,
+            'robots_txt_file' => is_file(ABSPATH . 'robots.txt'),
+            'config_issues' => $config->issues(),
+            'wpml' => Wpml::facts(),
+            'woocommerce' => WooCommerce::facts(),
         ];
     }
 
@@ -151,6 +128,35 @@ final class Report
         }
 
         return ['owner' => $owner, 'url' => home_url('/wp-sitemap.xml')];
+    }
+
+    /**
+     * @return string[]
+     */
+    private function pageTypeIssues(): array
+    {
+        $issues = [];
+
+        foreach (['about_page' => 'AboutPage', 'contact_page' => 'ContactPage'] as $key => $type) {
+            $id = $this->seo->config()->int('structured_data.' . $key);
+
+            if ($id <= 0) {
+                continue;
+            }
+
+            if (get_post_status($id) !== 'publish') {
+                $issues[] = sprintf(
+                    'structured_data.%s points to %d, which is not a published page (%s).',
+                    $key,
+                    $id,
+                    $type
+                );
+            } elseif (get_post_type($id) !== 'page') {
+                $issues[] = sprintf('structured_data.%s points to %d, which is not a page (%s).', $key, $id, $type);
+            }
+        }
+
+        return $issues;
     }
 
     /**

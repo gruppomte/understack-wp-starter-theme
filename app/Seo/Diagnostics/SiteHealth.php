@@ -29,77 +29,33 @@ final class SiteHealth
     {
         $report = (new Report($this->seo))->build();
         $fields = [];
-        $field = static function (string $key, string $label, string $value) use (&$fields): void {
-            $fields[$key] = ['label' => $label, 'value' => $value, 'private' => false];
-        };
 
-        $field(
-            'environment',
-            __('Environment', 'understack-wp-starter'),
-            sprintf(
-                '%s (%s)',
-                $report['environment']['type'],
-                $report['environment']['declared']
-                    ? __('declared', 'understack-wp-starter')
-                    : __('not declared, assumed', 'understack-wp-starter')
-            )
-        );
-        $field(
-            'indexability',
-            __('Indexability policy', 'understack-wp-starter'),
-            $report['environment']['noindex']
-                ? __('noindex, nofollow on every page (non-production environment)', 'understack-wp-starter')
-                : __('indexable', 'understack-wp-starter')
-        );
-        $field(
-            'provider',
-            __('SEO plugin', 'understack-wp-starter'),
-            trim($report['provider']['label'] . ' ' . $report['provider']['version'])
-        );
-
-        foreach ($report['ownership'] as $signal => $owner) {
-            /* translators: %s: name of the SEO signal (title, canonical, ...) */
-            $field('owner_' . $signal, sprintf(__('Owner of %s', 'understack-wp-starter'), $signal), $owner);
+        foreach ($report['checks'] as $check) {
+            $fields['check_' . $check['id']] = [
+                'label' => $check['label'],
+                'value' => $check['status'] . ' — ' . $check['detail'],
+                'private' => false,
+            ];
         }
 
-        $field(
-            'identity',
-            __('Organisation identity', 'understack-wp-starter'),
-            $report['identity']['configured']
-                ? sprintf(
-                    '%s (%s)',
-                    $report['identity']['name'],
-                    $report['identity']['schema_type']
-                )
-                : __('not configured', 'understack-wp-starter')
-        );
-        $field(
-            'structured_data',
-            __('Structured data', 'understack-wp-starter'),
-            sprintf(
-                /* translators: 1: owner of the JSON-LD graph, 2: enabled/disabled */
-                __('graph: %1$s; breadcrumbs: %2$s', 'understack-wp-starter'),
-                $report['structured_data']['owner'],
-                $report['breadcrumbs']['enabled']
-                    ? __('enabled', 'understack-wp-starter')
-                    : __('disabled', 'understack-wp-starter')
-            )
-        );
-        $field(
-            'sitemap',
-            __('XML sitemap', 'understack-wp-starter'),
-            $report['sitemap']['url'] !== '' ? $report['sitemap']['url'] : $report['sitemap']['owner']
-        );
-        $field(
-            'warnings',
-            __('Warnings', 'understack-wp-starter'),
-            $report['warnings'] === [] ? __('none', 'understack-wp-starter') : implode("\n", $report['warnings'])
-        );
+        $summary = $report['summary'];
+        $fields['summary'] = [
+            'label' => __('Summary', 'understack-wp-starter'),
+            'value' => sprintf(
+                /* translators: 1: passed, 2: warnings, 3: failed, 4: not verified */
+                __('%1$d passed, %2$d warning(s), %3$d failed, %4$d not verified', 'understack-wp-starter'),
+                $summary[Status::Pass->value] ?? 0,
+                $summary[Status::Warning->value] ?? 0,
+                $summary[Status::Fail->value] ?? 0,
+                $summary[Status::NotVerified->value] ?? 0
+            ),
+            'private' => false,
+        ];
 
         $info[Theme::SLUG . '-seo'] = [
             'label' => __('SEO foundation', 'understack-wp-starter'),
             'description' => __(
-                'Who emits each SEO signal, the environment policy and the configuration warnings.',
+                'Checks of the SEO foundation. NOT VERIFIED marks what cannot be measured from inside WordPress.',
                 'understack-wp-starter'
             ),
             'fields' => $fields,

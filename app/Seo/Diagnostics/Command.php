@@ -9,7 +9,7 @@ use Understack\Seo\Seo;
 use WP_CLI;
 
 /**
- * WP-CLI: `wp <theme slug> seo report [--format=json]`.
+ * WP-CLI: `wp <theme slug> seo report [--format=json]`. Exits with 1 when a check fails.
  */
 final class Command
 {
@@ -25,7 +25,7 @@ final class Command
     }
 
     /**
-     * Shows who owns each SEO signal, the environment policy and the configuration warnings.
+     * Runs the SEO checks (PASS, WARNING, FAIL, NOT VERIFIED) and shows the measured facts.
      *
      * ## OPTIONS
      *
@@ -51,10 +51,14 @@ final class Command
             return;
         }
 
+        \WP_CLI\Utils\format_items('table', $report['checks'], ['status', 'label', 'detail']);
+
         $rows = [];
 
         foreach (self::flatten($report) as $setting => $value) {
-            if ($setting === 'warnings' || str_starts_with($setting, 'config.')) {
+            $skip = str_starts_with($setting, 'checks') || str_starts_with($setting, 'config.');
+
+            if ($skip || $setting === 'warnings') {
                 continue;
             }
 
@@ -63,13 +67,21 @@ final class Command
 
         \WP_CLI\Utils\format_items('table', $rows, ['setting', 'value']);
 
-        foreach ($report['warnings'] as $warning) {
-            WP_CLI::warning($warning);
+        $summary = $report['summary'];
+        WP_CLI::line(sprintf(
+            'Checks: %d passed, %d warning(s), %d failed, %d not verified.',
+            $summary[Status::Pass->value] ?? 0,
+            $summary[Status::Warning->value] ?? 0,
+            $summary[Status::Fail->value] ?? 0,
+            $summary[Status::NotVerified->value] ?? 0
+        ));
+
+        if (($summary[Status::Fail->value] ?? 0) > 0) {
+            WP_CLI::warning('At least one check failed.');
+            WP_CLI::halt(1);
         }
 
-        if ($report['warnings'] === []) {
-            WP_CLI::success('No warnings.');
-        }
+        WP_CLI::success('No failed checks.');
     }
 
     /**
