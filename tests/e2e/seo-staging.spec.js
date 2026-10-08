@@ -1,3 +1,4 @@
+/* global getComputedStyle */
 import { expect, test } from '@playwright/test';
 import {
   expectNoDuplicates,
@@ -171,5 +172,32 @@ test.describe('WPML mock', () => {
     await page.goto('/');
 
     await expect(page.locator('link[rel="alternate"][hreflang]')).toHaveCount(0);
+  });
+});
+
+test.describe('breadcrumb accessibility', () => {
+  test('the trail is a labelled navigation with an ordered list, a current item and visible focus', async ({
+    page,
+  }) => {
+    await page.goto('/about/team/');
+
+    const nav = page.locator('nav[aria-label="Breadcrumb"]');
+    await expect(nav).toHaveCount(1);
+    await expect(nav.locator('ol > li')).toHaveCount(3);
+    await expect(nav.locator('[aria-current="page"]')).toHaveText('Team');
+    await expect(nav.locator('a')).toHaveCount(2);
+
+    const link = nav.locator('a').first();
+    await link.focus();
+    await expect(link).toBeFocused();
+    const visible = await link.evaluate((element) => {
+      const style = getComputedStyle(element);
+
+      return style.outlineStyle !== 'none' && parseFloat(style.outlineWidth) > 0;
+    });
+    expect(visible).toBe(true);
+
+    const separators = await nav.locator('[aria-hidden="true"]').allTextContents();
+    expect(separators.every((text) => text.trim() === '/')).toBe(true);
   });
 });

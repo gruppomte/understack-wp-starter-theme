@@ -33,13 +33,17 @@ export default defineConfig({
     trace: 'retain-on-failure',
   },
   projects: [
-    { name: 'desktop', use: { ...devices['Desktop Chrome'] }, testIgnore: /seo-staging/ },
-    { name: 'mobile', use: { ...devices['Pixel 7'] }, testIgnore: /seo|semantics/ },
+    {
+      name: 'desktop',
+      use: { ...devices['Desktop Chrome'] },
+      testIgnore: /seo-staging|matrix-staging/,
+    },
+    { name: 'mobile', use: { ...devices['Pixel 7'] }, testIgnore: /seo|semantics|a11y|matrix/ },
     ...(seoEnvironment === 'playground' || seoEnvironment === 'staging'
       ? [
           {
             name: 'staging',
-            testMatch: /seo-staging/,
+            testMatch: /seo-staging|matrix-staging/,
             use: { ...devices['Desktop Chrome'], baseURL: stagingURL },
           },
         ]
