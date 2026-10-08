@@ -1,6 +1,6 @@
 # SEO/GEO Foundation — Phase 0: Implementation Plan
 
-Date: 2026-10-08 · Branch: `feature/seo-geo-foundation` (from `v2027.1`, commit `8308adb`) · Status: approved on 2026-10-08 with decisions D-01…D-12 at their recommended defaults; Increments A (Phases 1–3) and B (Phase 4) implemented, see `03-configuration.md`, `04-structured-data.md` and sections 15–16. Companion documents: `00-audit.md` (measured baseline) and `01-ownership-matrix.md` (who owns each signal).
+Date: 2026-10-08 · Branch: `feature/seo-geo-foundation` (from `v2027.1`, commit `8308adb`) · Status: approved on 2026-10-08 with decisions D-01…D-12 at their recommended defaults; Increments A (Phases 1–3), B (Phase 4) and C (Phases 5–7 compatibility and diagnostics) implemented, see `03-configuration.md`, `04-structured-data.md`, `05-crawler-policy.md`, `06-content-semantics.md`, `07-compatibility.md` and sections 15–17. Companion documents: `00-audit.md` (measured baseline) and `01-ownership-matrix.md` (who owns each signal).
 
 ## 1. Goal and success criteria
 
@@ -266,3 +266,13 @@ Implemented as planned with these deviations, each verified:
 - A profile page falls back to `CollectionPage` when the author's name is not public, so no ProfilePage exists without a main entity.
 - The staging Playground also runs `tests/playground/seo-features.php` (breadcrumbs and author profiles on) so both the default and the enabled states are covered by the same CI run.
 - Tests added: unit (identity, types, author privacy, graph, serializer, breadcrumbs, ownership of the new signals), end-to-end (graph on real pages, privacy, page types, logo, breadcrumbs disabled and enabled, profile pages), smoke (identity read, graph integrity); head reports regenerated with a sample identity.
+
+## 17. Increment C outcome (2026-10-08)
+
+Scope as re-sequenced by the approval of Increment C: crawler policy (Phase 5), HTML semantics (Phase 6), WPML and WooCommerce compatibility (Phase 7, brought forward from Increment D) and the diagnostics with PASS / WARNING / FAIL / NOT VERIFIED statuses. Still for Increment D: the performance, accessibility and security pass (Phase 8), the full QA matrix (Phase 9) and the operations documentation and final delivery (Phase 10).
+
+- Crawler policy as configuration (`crawlers.policy`, `crawlers.groups`) appended after the core or plugin robots.txt body; no vendor token in the runtime, verified tokens and examples in `05-crawler-policy.md`.
+- Semantics: no template change was needed; `tests/e2e/semantics.spec.js` and the extended head report guard the structure (one `h1`, outline, landmarks, links, images, dates, no-JavaScript content).
+- WPML: `Seo\Integrations\Wpml` maps configured About/Contact page IDs through `wpml_object_id`; everything else was already language-aware; verified with a mock on the staging Playground, not certified.
+- WooCommerce: `Seo\Integrations\WooCommerce` allowances (no graph and no breadcrumbs on shop pages, nothing on cart, checkout and account pages, shop page description from the shop page itself); verified on the local site with WooCommerce 11.2.0, simple and variable products, pagination, Yoast + WooCommerce.
+- Diagnostics: `Seo\Diagnostics\Checks` (pure, unit-tested) feeds Site Health and `wp <slug> seo report`, which exits with 1 on a FAIL; six checks are always NOT VERIFIED by design.

@@ -28,6 +28,7 @@ Run them; do not assume. If a command is missing for a new kind of check, add it
 - No page builders, no jQuery in theme code, no admin branding, no generator or agency credits anywhere in the output.
 - SEO output goes through `app/Seo` only: one `wp_head` callback, the `wp_robots` and `rank_math/frontend/robots` filters, `wp_headers`, the sitemap filters. Templates never print meta tags, canonicals or JSON-LD. A signal is emitted only when `Seo\Ownership` says the theme owns it; an active SEO plugin owns everything it supports. Per-site settings live in `config/seo.php`, never hardcoded; nothing site-specific or agency-specific is pre-filled.
 - Indexability is explicit: `WP_ENVIRONMENT_TYPE` and `indexability.production_hosts` decide, never a domain pattern. Never add `noindex` to a declared production site, never use `robots.txt` to hide a staging copy, never touch server protections from the theme.
+- Crawler access is the site owner's decision: no user-agent token or vendor URL in the runtime, only `crawlers.groups` from the configuration appended to the virtual `robots.txt`. Diagnostics stay read-only and offline, with NOT VERIFIED for anything the theme cannot measure; no scores. Product, Offer and hreflang belong to WooCommerce, WPML or the SEO plugin, never to the theme.
 
 ## Output and security
 

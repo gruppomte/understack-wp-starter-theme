@@ -1,6 +1,6 @@
 # SEO/GEO Foundation — Configuration and Operations (Increment A)
 
-Status: Increments A (Phases 1–3) and B (structured data, organisation identity, breadcrumbs) implemented on branch `feature/seo-geo-foundation`. Crawler policy, WPML and WooCommerce compatibility arrive with the next increments. The structured data details are in `04-structured-data.md`.
+Status: Increments A (Phases 1–3), B (structured data, organisation identity, breadcrumbs) and C (crawler policy, HTML semantics checks, WPML and WooCommerce compatibility, diagnostics with statuses) implemented on branch `feature/seo-geo-foundation`. Details: `04-structured-data.md`, `05-crawler-policy.md`, `06-content-semantics.md`, `07-compatibility.md`.
 
 ## 1. What the theme does
 
@@ -48,6 +48,8 @@ Settings live in `config/seo.php` (an array of overrides, empty by default) and 
 | `structured_data.author_profiles` | `false`                 | `ProfilePage` on author archives and author archive URLs in Person nodes.                                                                                                    |
 | `breadcrumbs.enabled`             | `false`                 | Breadcrumb trail in the page header and the BreadcrumbList node.                                                                                                             |
 | `breadcrumbs.home_label`          | `''`                    | Label of the first item; the translatable "Home" when empty.                                                                                                                 |
+| `crawlers.policy`                 | `'unset'`               | `'unset'` (no decision recorded, reported by the diagnostics), `'open'` (robots.txt untouched by choice) or `'custom'` (groups below appended).                              |
+| `crawlers.groups`                 | `[]`                    | List of `['agents' => [...], 'allow' => [...], 'disallow' => [...], 'crawl_delay' => int]` appended to robots.txt; see `05-crawler-policy.md`.                               |
 
 Example `config/seo.php` for a client site:
 
@@ -82,10 +84,14 @@ Set `breadcrumbs.enabled` to `true` to render the trail at the top of the page h
 - **Social metadata**: `og:type` (`article` for article post types), `og:title` (document title), `og:description` (the description above), `og:url` (the canonical), `og:site_name`, `og:locale`, `og:image` with width, height and alt (featured image, else the default image), `article:published_time` and `article:modified_time` on articles; `twitter:card`, `twitter:title`, `twitter:description`, `twitter:image`, `twitter:site`. Nothing on search, 404 and previews.
 - **Robots**: core's tag plus `noindex` (with `follow`) on 404, attachment pages and configured types; `noindex, nofollow` on non-production environments.
 
+### Crawler policy
+
+`crawlers.policy` records the owner's decision on crawlers, AI training crawlers included: `open` leaves robots.txt as WordPress (or the SEO plugin) serves it, `custom` appends the configured groups after the core block. Tokens and example policies are in `05-crawler-policy.md`; the theme ships none of them.
+
 ## 4. Diagnostics
 
-- Site Health → Info → "SEO foundation": environment type (declared or assumed), indexability verdict, detected plugin and version, owner of each signal, organisation identity, structured data owner and breadcrumbs state, sitemap URL, warnings.
-- WP-CLI: `wp <slug> seo report` (table) or `wp <slug> seo report --format=json` (full report including the effective configuration).
+- Site Health → Info → "SEO foundation": one field per check with its status (PASS, WARNING, FAIL, NOT VERIFIED) and a summary. Checks cover the environment and indexability, search engine visibility, the SEO plugin, signal ownership, robots directives and headers, robots.txt and the crawler policy, the sitemap, structured data and organisation identity, About/Contact page IDs, configuration validity, breadcrumbs, WPML and WooCommerce. NOT VERIFIED marks what the theme cannot measure: headers set by the server, robots.txt as served, user-initiated AI fetchers, rendered HTML, indexing status, CDN and firewall rules.
+- WP-CLI: `wp <slug> seo report` prints the checks table, the measured facts and the summary, and exits with 1 when a check fails (usable in deployment scripts); `--format=json` returns everything, configuration included. No network request is made.
 - `node tests/seo-report.mjs --url https://site --label "…"`: Markdown report of the real head output of a running site, with duplicate detection. Use it after activating or deactivating an SEO plugin and before go-live.
 
 Warnings you may see: `WP_ENVIRONMENT_TYPE` not declared; host not in `production_hosts`; environment type contradicting the host list; `blog_public` = 0; provider forced to a plugin that is not active; Rank Math active but not yet registered or skipped (it prints nothing until then); a plugin detected but not verified; a physical `robots.txt` in the WordPress root; invalid configuration keys; organisation identity values dropped (unknown type, invalid URL, e-mail, telephone, country, small logo, LocalBusiness without a full address); no identity configured; About or Contact page IDs that are not published pages.
