@@ -170,3 +170,12 @@ Source check (28.6): Yoast removes core `rel_canonical` and the adjacent rel lin
 - Services are small `Registrable` classes registered in `Theme::SERVICES`; data is prepared in PHP, rendered in Twig; escaping at output.
 - Release ZIP ships runtime files only; `docs/` and tests never ship. CI must stay green (`php`, `assets`, `e2e`).
 - No new admin UI, no new dependencies, no JavaScript for SEO/GEO.
+
+## 10. Findings added during Increment A (2026-10-08)
+
+- Core's `<title>` already omits the "Category:" style prefix on term archives (`single_term_title`), so the planned title fallback was dropped: title stays a core signal and `fallbacks.title` does not exist.
+- An author archive with an empty title observed during the audit was a local data artefact (two posts with `post_author = 0` created from WP-CLI, requested through a non-existent author slug), not a theme defect; the real author URL renders both the `<title>` and the `h1`. The local posts were reassigned to the administrator.
+- Core's singular canonical includes the comment page whenever the `cpage` query var is set. The theme's `SingleController` sets it before the head to paginate comments, so every post with paged comments was canonicalised to its newest comment page (`/comment-page-2/#comments`). The foundation filters `get_canonical_url` and keeps the comment page only when the request contained `cpage`.
+- `/wp-sitemap.xml` answered 404 on the local site after the Rank Math and Yoast cycles: both plugins replace the core sitemap rewrite rules and the stale rules survive their deactivation until the permalinks are flushed. Documented in the operations checklist.
+- The residue scan flagged the AI vendor names in these documents; `docs/` is now development-only in `scripts/scan.mjs` (with tests), as approved (D-01).
+- The display name of the local administrator is an e-mail address: a reminder for Increment B that author data (`Person`, `author` meta) must never expose e-mail-like names or addresses.

@@ -66,11 +66,13 @@ app/            PHP, PSR-4 namespace, one responsibility per class
   Blocks/       block registration and rendering
   Hooks/        front-end hooks
   Integrations/ optional integrations (WooCommerce)
+  Seo/          SEO/GEO foundation: configuration, provider detection, fallbacks, indexability, diagnostics
   Support/      small helpers (Image, Posts, ViteManifest, Environment, base classes)
 blocks/         one directory per block: block.json, render.php, block.twig, style.css
 views/          Twig templates: layouts, pages, singles, archives, partials, components, sections, system
 src/            CSS and JavaScript sources (Vite)
 acf-json/       ACF field groups (Local JSON)
+config/         per-site configuration files (seo.php)
 includes/acf/   bundled ACF Pro (third-party, never edited)
 tests/          smoke tests, Playwright suite, Playground seed
 site/           site-level files installed next to the theme (login-slug must-use plugin)
@@ -143,6 +145,14 @@ Animations respect `prefers-reduced-motion` and never hide content before JavaSc
 
 Strings use the theme text domain in PHP and Twig (`__()`, `_n()`, …). `npm run i18n` regenerates the `.pot` file; the initializer renames the text domain.
 
+### SEO and GEO
+
+The theme ships an SEO/GEO foundation (`app/Seo`) that never competes with WordPress core or with an SEO plugin. Without a plugin it adds what core leaves out: a meta description from the excerpt, the page lead or the content; canonicals for the front page, archives and paginated listings; Open Graph and Twitter Card metadata; `noindex` on 404 and attachment pages; a core sitemap without the users list. When Rank Math, Yoast SEO, SEOPress, All in One SEO, The SEO Framework or Slim SEO is active, the theme is silent for every signal the plugin owns.
+
+The environment policy is always on: a copy that declares `WP_ENVIRONMENT_TYPE` as `local`, `development` or `staging` serves `noindex, nofollow` as a meta directive and as an `X-Robots-Tag` header, also through Rank Math and Yoast. Production is never guessed from the domain; a missing or contradictory declaration is reported by the diagnostics (Site Health → Info, or `wp <slug> seo report`) instead of being acted on. Real staging protection (HTTP authentication, firewall) stays at the server.
+
+Settings live in `config/seo.php` (or the `<slug>/seo/config` filter); the reference is in `docs/seo-geo/03-configuration.md`, the design and the measured plugin behaviour in the other `docs/seo-geo` documents.
+
 ### WooCommerce
 
 The integration layer (`Integrations\WooCommerce`, `woocommerce.php`, `views/woocommerce`, `src/css/woocommerce.css`) is inert unless the plugin is active and can be removed by the initializer. Customisations go through WooCommerce hooks; template overrides only when hooks are not enough.
@@ -176,8 +186,11 @@ Principles: ship little JavaScript (the main bundle is a few KB; Alpine and GSAP
 
 ## Testing and CI
 
-- `npm run check -- --url …`: syntax, Composer, manifest, linters, PHPStan, residue scan, PHP smoke test (theme bootstrap, Timber, ACF, templates) and HTTP smoke test (homepage, page, post, archive, search, 404).
-- `npm run test:e2e`: Playwright. Without `BASE_URL` it boots WordPress Playground (PHP in WebAssembly, no Docker) with `tests/playground/seed.php`; with `BASE_URL` it runs against any site. Covers the homepage, navigation, mobile menu, sub-menus, 404 and console errors.
+- `npm run check -- --url …`: syntax, Composer, manifest, linters, PHPStan, residue scan, tooling tests, PHP smoke test (theme bootstrap, Timber, ACF, templates, SEO foundation) and HTTP smoke test (homepage, page, post, archive, search, 404).
+- `composer test:unit`: unit tests for the pure PHP logic (configuration validation, provider detection, ownership, environment policy, text summaries, pagination URLs) without WordPress.
+- `npm run test:scripts`: `node:test` suite for the Node tooling (residue scan).
+- `npm run test:e2e`: Playwright. Without `BASE_URL` it boots two WordPress Playgrounds (PHP in WebAssembly, no Docker) with `tests/playground/seed.php`: one as production, one declaring `WP_ENVIRONMENT_TYPE=staging` for the indexability checks. With `BASE_URL` it runs against any site (set `SEO_ENVIRONMENT=production` or `staging` to include the SEO specs there). Covers the homepage, navigation, mobile menu, sub-menus, 404, console errors and the SEO head output.
+- `node tests/seo-report.mjs --url …`: Markdown report of the head output of a running site (titles, descriptions, canonicals, robots, social metadata, JSON-LD, headings, landmarks, duplicates); the reports for the local site with and without SEO plugins are kept in `docs/seo-geo/08-head-reports`.
 - `.github/workflows/ci.yml` runs lint, analysis, build and the end-to-end suite on every push and pull request.
 
 Project-specific tests belong in the project; the suite here is the baseline.

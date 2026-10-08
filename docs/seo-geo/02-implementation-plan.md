@@ -1,6 +1,6 @@
 # SEO/GEO Foundation — Phase 0: Implementation Plan
 
-Date: 2026-10-08 · Branch: `feature/seo-geo-foundation` (from `v2027.1`, commit `8308adb`) · Status: proposal, nothing implemented. Companion documents: `00-audit.md` (measured baseline) and `01-ownership-matrix.md` (who owns each signal).
+Date: 2026-10-08 · Branch: `feature/seo-geo-foundation` (from `v2027.1`, commit `8308adb`) · Status: approved on 2026-10-08 with decisions D-01…D-12 at their recommended defaults; Increment A (Phases 1–3) implemented, see `03-configuration.md` and section 15. Companion documents: `00-audit.md` (measured baseline) and `01-ownership-matrix.md` (who owns each signal).
 
 ## 1. Goal and success criteria
 
@@ -242,3 +242,16 @@ Not claimed: Lighthouse scores, Rich Results validation, ranking or AI-citation 
 | D-10 | `llms.txt` stays out of the roadmap.                                                               | Yes, per your priorities.                                                                 |
 | D-11 | `with_provider` opt-ins exist but ship empty.                                                      | Yes.                                                                                      |
 | D-12 | Approval cadence after Phase 0: stop after increment A, then after each increment or at the end.   | Stop after A; your call for B–D.                                                          |
+
+## 15. Increment A outcome (2026-10-08)
+
+Implemented as planned with these deviations, each verified:
+
+- No title fallback: core's document title was verified complete on every template type, so `Meta\Title` and `fallbacks.title` were not created (title remains a core signal).
+- `Signal::Title` ownership therefore only distinguishes core from provider; `with_provider` accepts `description`, `canonical` and `social`.
+- `content.article_post_types` replaces the planned `structured_data.article_post_types` because it already drives `og:type` and the article times; the structured data increment reuses it.
+- Canonical correction on singular pages: the theme filters `get_canonical_url` to drop the comment page core appends when the request did not ask for one (section 10 of the audit).
+- Robots delivery as designed in AD-09, verified with the local provider matrix: `noindex, nofollow` and the `X-Robots-Tag` header survive Rank Math (through `rank_math/frontend/robots`) and Yoast (through `wp_robots` at `PHP_INT_MAX`), with no duplicate tag.
+- Diagnostics: Site Health → Info section and `wp <slug> seo report`; the Rank Math "setup not completed" hint reads the plugin's registration option without modifying it.
+- Tests added: unit runner (`composer test:unit`, 36 tests), tooling tests (`npm run test:scripts`), Playwright SEO specs on a production and a staging Playground, SEO checks in `tests/smoke.php`, the head report script and the three local head reports in `08-head-reports/`.
+- Tooling: `config/` ships in the release ZIP; `docs/` is development-only for the residue scan; CI runs the unit tests in the PHP job and the tooling tests through `scripts/check.mjs`.
