@@ -7,12 +7,40 @@ namespace Understack\Seo\Identity;
 use Understack\Core\Theme;
 
 /**
- * Reads the identity fields from the ACF "Site Settings" options page (with a
- * plain-option fallback when ACF is not loaded) and lets a companion plugin
- * replace or complete them through the "<slug>/seo/identity" filter.
+ * Reads the identity fields of the ACF "Site Settings" options page straight
+ * from the options table (ACF stores every field as "options_<name>"), priming
+ * the option cache once so unset fields cost no query, and lets a companion
+ * plugin replace or complete them through the "<slug>/seo/identity" filter.
+ * ACF itself is never called: the data model does not depend on it.
  */
 final class Repository
 {
+    private const PREFIX = 'options_';
+
+    /** @var string[] Single-value fields. */
+    private const FIELDS = [
+        'org_type',
+        'org_name',
+        'org_legal_name',
+        'org_description',
+        'org_logo',
+        'org_url',
+        'org_email',
+        'org_telephone',
+        'org_address_street',
+        'org_address_locality',
+        'org_address_region',
+        'org_address_postal_code',
+        'org_address_country',
+    ];
+
+    /** @var array<string, string[]> Repeater fields and their sub fields. */
+    private const REPEATERS = [
+        'social_links' => ['url', 'label'],
+        'org_areas_served' => ['area'],
+        'org_same_as' => ['url'],
+    ];
+
     public static function load(): Identity
     {
         /**
@@ -21,7 +49,6 @@ final class Repository
          * @param string[] $types
          */
         $types = apply_filters(Theme::SLUG . '/seo/identity_types', Types::all());
-
         $allowed = is_array($types) ? array_values(array_filter($types, 'is_string')) : [];
 
         return Identity::fromArray(self::raw(), $allowed);
@@ -34,8 +61,8 @@ final class Repository
      */
     public static function raw(): array
     {
-        $address = self::field('org_address');
-        $address = is_array($address) ? $address : [];
+        self::prime();
+
         $sameAs = [];
 
         foreach (self::rows('social_links') as $row) {
@@ -53,20 +80,20 @@ final class Repository
         }
 
         $raw = [
-            'type' => self::field('org_type'),
-            'name' => self::field('org_name'),
-            'legal_name' => self::field('org_legal_name'),
-            'description' => self::field('org_description'),
-            'logo' => self::logo(self::field('org_logo')),
-            'url' => self::field('org_url'),
-            'email' => self::field('org_email'),
-            'telephone' => self::field('org_telephone'),
+            'type' => self::option('org_type'),
+            'name' => self::option('org_name'),
+            'legal_name' => self::option('org_legal_name'),
+            'description' => self::option('org_description'),
+            'logo' => self::logo(self::option('org_logo')),
+            'url' => self::option('org_url'),
+            'email' => self::option('org_email'),
+            'telephone' => self::option('org_telephone'),
             'address' => [
-                'street' => $address['street'] ?? '',
-                'locality' => $address['locality'] ?? '',
-                'region' => $address['region'] ?? '',
-                'postal_code' => $address['postal_code'] ?? '',
-                'country' => $address['country'] ?? '',
+                'street' => self::option('org_address_street'),
+                'locality' => self::option('org_address_locality'),
+                'region' => self::option('org_address_region'),
+                'postal_code' => self::option('org_address_postal_code'),
+                'country' => self::option('org_address_country'),
             ],
             'areas_served' => array_filter($areas, static fn (string $area): bool => $area !== ''),
             'same_as' => array_filter($sameAs, static fn (string $url): bool => $url !== ''),
@@ -83,37 +110,64 @@ final class Repository
         return is_array($filtered) ? $filtered : $raw;
     }
 
-    private static function field(string $name): mixed
+    /**
+     * Loads every option the identity needs with one query (two with repeater
+     * rows) and records the missing ones, so unset fields never query again.
+     */
+    private static function prime(): void
     {
-        if (function_exists('get_field')) {
-            return get_field($name, 'option');
+        if (! function_exists('wp_prime_option_caches')) {
+            return;
         }
 
-        return get_option('options_' . $name);
+        $names = array_map(static fn (string $field): string => self::PREFIX . $field, self::FIELDS);
+
+        foreach (array_keys(self::REPEATERS) as $repeater) {
+            $names[] = self::PREFIX . $repeater;
+        }
+
+        wp_prime_option_caches($names);
+
+        $rowNames = [];
+
+        foreach (self::REPEATERS as $repeater => $subFields) {
+            $count = (int) get_option(self::PREFIX . $repeater);
+
+            for ($index = 0; $index < min($count, 100); $index++) {
+                foreach ($subFields as $subField) {
+                    $rowNames[] = self::PREFIX . $repeater . '_' . $index . '_' . $subField;
+                }
+            }
+        }
+
+        if ($rowNames !== []) {
+            wp_prime_option_caches($rowNames);
+        }
+    }
+
+    private static function option(string $field): mixed
+    {
+        $value = get_option(self::PREFIX . $field);
+
+        return $value === false ? '' : $value;
     }
 
     /**
-     * Repeater rows without ACF: the row count is stored under the field name,
-     * each value under "<field>_<row>_<sub field>".
+     * Repeater rows: the row count is stored under the field name, each value
+     * under "<field>_<row>_<sub field>".
      *
      * @return array<int, array<string, mixed>>
      */
-    private static function rows(string $name): array
+    private static function rows(string $repeater): array
     {
-        if (function_exists('get_field')) {
-            $rows = get_field($name, 'option');
-
-            return is_array($rows) ? array_values(array_filter($rows, 'is_array')) : [];
-        }
-
-        $count = (int) get_option('options_' . $name);
+        $count = min((int) get_option(self::PREFIX . $repeater), 100);
         $rows = [];
 
         for ($index = 0; $index < $count; $index++) {
             $row = [];
 
-            foreach (['url', 'label', 'area'] as $subField) {
-                $value = get_option('options_' . $name . '_' . $index . '_' . $subField);
+            foreach (self::REPEATERS[$repeater] ?? [] as $subField) {
+                $value = get_option(self::PREFIX . $repeater . '_' . $index . '_' . $subField);
 
                 if (is_string($value)) {
                     $row[$subField] = $value;
