@@ -1,10 +1,17 @@
 import { expect, test } from '@playwright/test';
-import { expectNoDuplicates, inspectHead } from './seo-helpers.js';
+import {
+  expectNoDuplicates,
+  inspectBreadcrumbs,
+  inspectHead,
+  inspectJsonLd,
+} from './seo-helpers.js';
 
 /**
  * Indexability policy on a copy that declares WP_ENVIRONMENT_TYPE=staging:
  * every page carries noindex, nofollow as a meta directive and as a header,
  * while canonicals and descriptions stay in place and robots.txt is untouched.
+ * This Playground also runs with tests/playground/seo-features.php, which
+ * enables breadcrumbs and author profiles.
  */
 for (const path of ['/', '/sample-post-1/', '/about/', '/category/news/']) {
   test(`${path} is not indexable on staging`, async ({ page }) => {
@@ -46,4 +53,90 @@ test('the core sitemap keeps working on staging', async ({ request }) => {
   const response = await request.get('/wp-sitemap.xml');
 
   expect(response.status()).toBe(200);
+});
+
+test.describe('breadcrumbs enabled', () => {
+  test('a nested page shows its hierarchy and the matching BreadcrumbList', async ({
+    page,
+    baseURL,
+  }) => {
+    await page.goto('/about/team/');
+    const trail = await inspectBreadcrumbs(page);
+
+    expect(trail).toEqual([
+      { name: 'Home', url: `${baseURL}/`, current: false },
+      { name: 'About us', url: `${baseURL}/about/`, current: false },
+      { name: 'Team', url: null, current: true },
+    ]);
+    await expect(page.locator('nav[aria-label="Breadcrumb"] ol')).toHaveCount(1);
+
+    const graph = await inspectJsonLd(page);
+    const list = graph.byType('BreadcrumbList');
+    expect(
+      list.itemListElement.map((item) => [item.position, item.name, item.item ?? null]),
+    ).toEqual([
+      [1, 'Home', `${baseURL}/`],
+      [2, 'About us', `${baseURL}/about/`],
+      [3, 'Team', null],
+    ]);
+    expect(graph.byType('WebPage').breadcrumb).toEqual({ '@id': list['@id'] });
+    expect(graph.dangling).toEqual([]);
+  });
+
+  test('a post shows its category and a paginated category shows the page number', async ({
+    page,
+    baseURL,
+  }) => {
+    await page.goto('/sample-post-2/');
+    expect((await inspectBreadcrumbs(page)).map((item) => item.name)).toEqual([
+      'Home',
+      'News',
+      'Sample post 2 with an apostrophe\u2019s entity',
+    ]);
+
+    await page.goto('/category/news/page/2/');
+    expect(await inspectBreadcrumbs(page)).toEqual([
+      { name: 'Home', url: `${baseURL}/`, current: false },
+      { name: 'News', url: `${baseURL}/category/news/`, current: false },
+      { name: 'Page 2', url: null, current: true },
+    ]);
+  });
+
+  test('the front page has no trail', async ({ page }) => {
+    await page.goto('/');
+
+    expect(await inspectBreadcrumbs(page)).toBeNull();
+  });
+
+  test('author archives expose a profile only for a public name', async ({ page, baseURL }) => {
+    await page.goto('/author/alice/');
+    const alice = await inspectJsonLd(page);
+    const person = alice.byType('Person');
+
+    expect(alice.types).toContain('ProfilePage');
+    expect(alice.byType('ProfilePage').mainEntity).toEqual({ '@id': person['@id'] });
+    expect(person.name).toBe('Alice Rossi');
+    expect(person.url).toBe(`${baseURL}/author/alice/`);
+    expect((await inspectBreadcrumbs(page)).map((item) => item.name)).toEqual([
+      'Home',
+      'Alice Rossi',
+    ]);
+
+    await page.goto('/author/admin/');
+    const admin = await inspectJsonLd(page);
+    expect(admin.types).not.toContain('ProfilePage');
+    expect(admin.types).not.toContain('Person');
+    expect(admin.raw).not.toContain('"admin"');
+    expect((await inspectBreadcrumbs(page)).map((item) => item.name)).toEqual(['Home', 'Author']);
+  });
+
+  test('the post author links to the archive when profiles are enabled', async ({
+    page,
+    baseURL,
+  }) => {
+    await page.goto('/sample-post-2/');
+    const graph = await inspectJsonLd(page);
+
+    expect(graph.byType('Person').url).toBe(`${baseURL}/author/alice/`);
+  });
 });

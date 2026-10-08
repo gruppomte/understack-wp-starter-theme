@@ -47,5 +47,11 @@ export default defineConfig({
   ],
   webServer: external
     ? undefined
-    : [playground('', baseURL), playground('--port 9401 --env staging', stagingURL)],
+    : [
+        playground('', baseURL),
+        playground(
+          '--port 9401 --env staging --fixture tests/playground/seo-features.php',
+          stagingURL,
+        ),
+      ],
 });

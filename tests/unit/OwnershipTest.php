@@ -56,5 +56,29 @@ test('ownership: disabled fallbacks leave a signal to nobody or to core', functi
         'social' => 'none',
         'sitemap' => 'core',
         'robots_txt' => 'core',
+        'structured_data' => 'theme',
+        'breadcrumbs' => 'none',
     ], $ownership->toArray());
+});
+
+test('ownership: the breadcrumb node follows the graph owner and the breadcrumb flag', function (): void {
+    $enabled = ['breadcrumbs' => ['enabled' => true]];
+
+    assertSame(Owner::None, Ownership::resolve(Provider::None, Config::fromArray([]))->of(Signal::Breadcrumbs));
+    assertSame(Owner::Theme, Ownership::resolve(Provider::None, Config::fromArray($enabled))->of(Signal::Breadcrumbs));
+    assertSame(
+        Owner::Provider,
+        Ownership::resolve(Provider::Yoast, Config::fromArray($enabled))->of(Signal::Breadcrumbs)
+    );
+    assertSame(Owner::Provider, Ownership::resolve(Provider::Yoast, Config::fromArray([]))->of(Signal::StructuredData));
+    assertSame(
+        Owner::None,
+        Ownership::resolve(Provider::None, Config::fromArray(['fallbacks' => ['structured_data' => false]] + $enabled))
+            ->of(Signal::Breadcrumbs)
+    );
+    assertSame(
+        Owner::Theme,
+        Ownership::resolve(Provider::Yoast, Config::fromArray(['with_provider' => ['structured_data']] + $enabled))
+            ->of(Signal::Breadcrumbs)
+    );
 });

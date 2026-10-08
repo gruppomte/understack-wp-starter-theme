@@ -160,6 +160,23 @@ if ($seo instanceof Understack\Seo\Seo) {
         sprintf('%s → %s', $verdict->type, $verdict->noindex ? 'noindex' : 'indexable')
     );
 
+    $identity = $seo->identity();
+    $raw = Understack\Seo\Identity\Repository::raw();
+    $check(
+        'SEO identity readable',
+        array_key_exists('type', $raw) && array_key_exists('name', $raw) && array_key_exists('address', $raw)
+            && array_key_exists('same_as', $raw),
+        $identity->isConfigured() ? $identity->schemaType() . ' ' . $identity->name : 'not configured'
+    );
+
+    $nodes = Understack\Seo\StructuredData\Graph::build((new Understack\Seo\StructuredData\Collector($seo))->collect());
+    $check(
+        'SEO structured data graph',
+        $nodes !== [] && Understack\Seo\StructuredData\Graph::danglingReferences($nodes) === []
+            && Understack\Seo\StructuredData\Serializer::encode($nodes) !== '',
+        implode(', ', array_column($nodes, '@type'))
+    );
+
     $report = (new Understack\Seo\Diagnostics\Report($seo))->build();
     $check(
         'SEO diagnostics report',
