@@ -49,6 +49,51 @@ add_action('after_setup_theme', static function (): void {
     });
 }, 10);
 
+// A custom post type with an archive and a custom taxonomy, for the SEO matrix.
+add_action('init', static function (): void {
+    register_post_type('portfolio', [
+        'label' => 'Portfolio',
+        'public' => true,
+        'has_archive' => true,
+        'show_in_rest' => true,
+        'supports' => ['title', 'editor', 'excerpt', 'thumbnail'],
+        'rewrite' => ['slug' => 'portfolio'],
+        'description' => 'Selected work.',
+    ]);
+    register_taxonomy('genre', 'portfolio', [
+        'label' => 'Genre',
+        'public' => true,
+        'hierarchical' => true,
+        'show_in_rest' => true,
+        'rewrite' => ['slug' => 'genre'],
+    ]);
+
+    if (get_option('seo_matrix_seeded')) {
+        return;
+    }
+
+    $genre = wp_insert_term('Branding', 'genre');
+    $genreId = is_array($genre) ? (int) $genre['term_id'] : 0;
+
+    foreach ([1, 2, 3] as $index) {
+        $id = (int) wp_insert_post([
+            'post_type' => 'portfolio',
+            'post_status' => 'publish',
+            'post_title' => "Portfolio item {$index}",
+            'post_name' => "portfolio-item-{$index}",
+            'post_content' => "<!-- wp:paragraph --><p>Work number {$index}.</p><!-- /wp:paragraph -->",
+            'post_excerpt' => $index === 1 ? 'A branding project.' : '',
+        ]);
+
+        if ($genreId > 0) {
+            wp_set_object_terms($id, [$genreId], 'genre');
+        }
+    }
+
+    update_option('seo_matrix_seeded', 1);
+    flush_rewrite_rules(false);
+}, 5);
+
 // WPML mock: the "translation" of the Contact page is the Team page.
 add_filter('wpml_object_id', static function ($id, $type) {
     $contact = get_page_by_path('contact');
