@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, 'feature/**']
   pull_request:
 
 permissions:
@@ -22,6 +22,7 @@ jobs:
       - run: composer validate --strict --no-check-publish
       - run: composer lint
       - run: composer analyse
+      - run: composer test:unit
 
   assets:
     name: Build and lint assets

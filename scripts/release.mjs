@@ -33,6 +33,7 @@ const RUNTIME_PATHS = [
   'blocks',
   'views',
   'acf-json',
+  'config',
   'includes',
   'public',
   'languages',

@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Understack WP Starter 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-06T15:39:08+00:00\n"
+"POT-Creation-Date: 2026-10-08T09:59:09+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -47,6 +47,35 @@ msgstr ""
 msgid "Footer navigation"
 msgstr ""
 
+#: app/Seo/Breadcrumbs.php:103
+msgid "Page %d"
+msgstr ""
+
+#: app/Seo/Breadcrumbs.php:218
+msgid "Author"
+msgstr ""
+
+#: app/Seo/Breadcrumbs.php:99
+msgid "Home"
+msgstr ""
+
+#: app/Seo/Diagnostics/SiteHealth.php:43
+msgid "Summary"
+msgstr ""
+
+#. translators: 1: passed, 2: warnings, 3: failed, 4: not verified
+#: app/Seo/Diagnostics/SiteHealth.php:46
+msgid "%1$d passed, %2$d warning(s), %3$d failed, %4$d not verified"
+msgstr ""
+
+#: app/Seo/Diagnostics/SiteHealth.php:56
+msgid "SEO foundation"
+msgstr ""
+
+#: app/Seo/Diagnostics/SiteHealth.php:57
+msgid "Checks of the SEO foundation. NOT VERIFIED marks what cannot be measured from inside WordPress."
+msgstr ""
+
 #: blocks/hero/block.twig:15
 msgid "Add a heading to the hero block."
 msgstr ""
@@ -84,6 +113,10 @@ msgstr ""
 
 #: views/layouts/base.twig:11
 msgid "Skip to content"
+msgstr ""
+
+#: views/partials/breadcrumbs.twig:7
+msgid "Breadcrumb"
 msgstr ""
 
 #: views/partials/comment.twig:12
@@ -133,7 +166,7 @@ msgstr ""
 msgid "All posts"
 msgstr ""
 
-#: views/singles/single.twig:39
+#: views/singles/single.twig:40
 msgid "Tags"
 msgstr ""
 

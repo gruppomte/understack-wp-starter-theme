@@ -127,7 +127,16 @@ if (options.lint !== false) {
 const scanResult = scan(root, { strict: Boolean(options.strict) });
 record('Residue scan', scanResult.violations.length === 0, formatReport(scanResult).split('\n')[0]);
 
-// 6. WordPress runtime smoke test
+// 6. Tooling tests (node:test)
+// A glob instead of a directory: Node 22 does not expand directories passed to --test.
+const scriptTests = run('node', ['--test', 'tests/scripts/*.test.mjs'], { cwd: root });
+record(
+  'Tooling tests',
+  scriptTests.status === 0,
+  scriptTests.status === 0 ? '' : (scriptTests.stdout + scriptTests.stderr).trim(),
+);
+
+// 7. WordPress runtime smoke test
 function findWordPress() {
   let directory = root;
 
@@ -158,7 +167,7 @@ if (options.wp === false || !wpLoad) {
   );
 }
 
-// 7. HTTP smoke test
+// 8. HTTP smoke test
 if (options.url) {
   const result = run('node', [join(root, 'tests/http.mjs'), '--url', options.url], { cwd: root });
   console.log(

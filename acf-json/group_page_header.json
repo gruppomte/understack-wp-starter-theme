@@ -41,6 +41,36 @@
             "ui": 1,
             "ui_on_text": "",
             "ui_off_text": ""
+        },
+        {
+            "key": "field_68e5b1c2d3e01",
+            "label": "Structured data page type",
+            "name": "page_schema_type",
+            "aria-label": "",
+            "type": "select",
+            "instructions": "Marks this page as the About or Contact page in the structured data. Leave empty for a regular page.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "": "Regular page",
+                "AboutPage": "About page",
+                "ContactPage": "Contact page"
+            },
+            "default_value": "",
+            "return_format": "value",
+            "multiple": 0,
+            "allow_null": 0,
+            "allow_in_bindings": 0,
+            "ui": 0,
+            "ajax": 0,
+            "placeholder": "",
+            "create_options": 0,
+            "save_options": 0
         }
     ],
     "location": [
@@ -61,5 +91,5 @@
     "active": true,
     "description": "",
     "show_in_rest": 0,
-    "modified": 1759766400
+    "modified": 1759838400
 }

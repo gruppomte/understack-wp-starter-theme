@@ -1,0 +1,48 @@
+<?php
+
+/**
+ * PHPStan stub for the WP-CLI API used by the theme's diagnostics command.
+ */
+
+namespace {
+    class WP_CLI
+    {
+        /**
+         * @param callable|object|class-string $callable
+         * @param array<string, mixed> $args
+         */
+        public static function add_command(string $name, $callable, array $args = []): bool
+        {
+        }
+
+        public static function line(string $message = ''): void
+        {
+        }
+
+        public static function warning(string $message): void
+        {
+        }
+
+        public static function success(string $message): void
+        {
+        }
+
+        /**
+         * @return never
+         */
+        public static function halt(int $code): void
+        {
+            exit($code);
+        }
+    }
+}
+
+namespace WP_CLI\Utils {
+    /**
+     * @param array<int, array<string, mixed>> $items
+     * @param string[]|string $fields
+     */
+    function format_items(string $format, array $items, $fields): void
+    {
+    }
+}

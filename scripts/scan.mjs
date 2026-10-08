@@ -31,6 +31,9 @@ const SELF = fileURLToPath(import.meta.url);
  */
 const DEVELOPMENT_ONLY = new Set(['CLAUDE.md', '.env.example']);
 
+/** Development-only directories: documentation never ships and may name third-party crawlers and tools. */
+const DEVELOPMENT_ONLY_DIRECTORIES = ['docs/'];
+
 export function scan(root, { strict = false, identity = readIdentity(root) } = {}) {
   const identityValues = [identity.slug, identity.name, identity.namespace, identity.textDomain]
     .filter(Boolean)
@@ -48,6 +51,7 @@ export function scan(root, { strict = false, identity = readIdentity(root) } = {
       path === 'scripts/scan.mjs' ||
       !isTextFile(file) ||
       DEVELOPMENT_ONLY.has(path) ||
+      DEVELOPMENT_ONLY_DIRECTORIES.some((directory) => path.startsWith(directory)) ||
       path.startsWith('.env')
     ) {
       continue;

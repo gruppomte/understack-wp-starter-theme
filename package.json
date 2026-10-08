@@ -16,6 +16,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test:e2e": "playwright test",
+    "test:scripts": "node --test \"tests/scripts/*.test.mjs\"",
     "wp:playground": "node scripts/playground.mjs",
     "local:setup": "node scripts/local-setup.mjs",
     "lighthouse": "node scripts/lighthouse.mjs",
