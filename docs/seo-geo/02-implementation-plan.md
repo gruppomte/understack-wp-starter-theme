@@ -1,6 +1,6 @@
 # SEO/GEO Foundation — Phase 0: Implementation Plan
 
-Date: 2026-10-08 · Branch: `feature/seo-geo-foundation` (from `v2027.1`, commit `8308adb`) · Status: approved on 2026-10-08 with decisions D-01…D-12 at their recommended defaults; Increments A (Phases 1–3), B (Phase 4) and C (Phases 5–7 compatibility and diagnostics) implemented, see `03-configuration.md`, `04-structured-data.md`, `05-crawler-policy.md`, `06-content-semantics.md`, `07-compatibility.md` and sections 15–17. Companion documents: `00-audit.md` (measured baseline) and `01-ownership-matrix.md` (who owns each signal).
+Date: 2026-10-08 · Branch: `feature/seo-geo-foundation` (from `v2027.1`, commit `8308adb`) · Status: approved on 2026-10-08 with decisions D-01…D-12 at their recommended defaults; All increments implemented (A: Phases 1–3; B: Phase 4; C: Phases 5–7 compatibility and diagnostics; D: Phases 8–10 hardening, QA, CI and release candidate), see `03-configuration.md` to `13-release-candidate.md` and sections 15–18. Companion documents: `00-audit.md` (measured baseline) and `01-ownership-matrix.md` (who owns each signal).
 
 ## 1. Goal and success criteria
 
@@ -276,3 +276,7 @@ Scope as re-sequenced by the approval of Increment C: crawler policy (Phase 5), 
 - WPML: `Seo\Integrations\Wpml` maps configured About/Contact page IDs through `wpml_object_id`; everything else was already language-aware; verified with a mock on the staging Playground, not certified.
 - WooCommerce: `Seo\Integrations\WooCommerce` allowances (no graph and no breadcrumbs on shop pages, nothing on cart, checkout and account pages, shop page description from the shop page itself); verified on the local site with WooCommerce 11.2.0, simple and variable products, pagination, Yoast + WooCommerce.
 - Diagnostics: `Seo\Diagnostics\Checks` (pure, unit-tested) feeds Site Health and `wp <slug> seo report`, which exits with 1 on a FAIL; six checks are always NOT VERIFIED by design.
+
+## 18. Increment D outcome (2026-10-08)
+
+Final hardening, QA, CI and release candidate without new features: performance audit against `v2027.1` with a reproducible probe (one identity query regression found and fixed by priming the option cache), hardening tests for oversized, mistyped and hostile input plus a hostile-content fixture rendered on real pages, accessibility checks (accessible names, keyboard order, visible focus, breadcrumb semantics), HTML validation of the templates, the parametrised SEO matrix on both Playgrounds with a custom post type and taxonomy, CI on feature branches with the first remote run of the whole suite, packaging verification of the release ZIP, the operations guide and the release candidate report (`13-release-candidate.md`). No version change, no tag, no merge.

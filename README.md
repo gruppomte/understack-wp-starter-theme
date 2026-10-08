@@ -195,7 +195,7 @@ Principles: ship little JavaScript (the main bundle is a few KB; Alpine and GSAP
 - `npm run test:scripts`: `node:test` suite for the Node tooling (residue scan).
 - `npm run test:e2e`: Playwright. Without `BASE_URL` it boots two WordPress Playgrounds (PHP in WebAssembly, no Docker) with `tests/playground/seed.php`: one as production, one declaring `WP_ENVIRONMENT_TYPE=staging` for the indexability checks. With `BASE_URL` it runs against any site (set `SEO_ENVIRONMENT=production` or `staging` to include the SEO specs there). Covers the homepage, navigation, mobile menu, sub-menus, 404, console errors and the SEO head output.
 - `node tests/seo-report.mjs --url …`: Markdown report of the head output of a running site (titles, descriptions, canonicals, robots, social metadata, JSON-LD, headings, landmarks, duplicates); the reports for the local site with and without SEO plugins are kept in `docs/seo-geo/08-head-reports`.
-- `.github/workflows/ci.yml` runs lint, analysis, build and the end-to-end suite on every push and pull request.
+- `.github/workflows/ci.yml` runs lint, analysis, unit tests, build, tooling tests and the end-to-end suite (two Playgrounds) on every push to `main` or to a `feature/**` branch and on pull requests.
 
 Project-specific tests belong in the project; the suite here is the baseline.
 
