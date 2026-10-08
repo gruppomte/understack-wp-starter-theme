@@ -65,6 +65,31 @@ final class Report
             $warnings[] = 'Configuration: ' . $issue;
         }
 
+        $identity = $this->seo->identity();
+
+        foreach ($identity->issues as $issue) {
+            $warnings[] = 'Organisation identity: ' . $issue;
+        }
+
+        if (! $identity->isConfigured() && $ownership->themeOwns(Signal::StructuredData)) {
+            $warnings[] = 'No organisation identity is configured (Site Settings → Organization): the structured data '
+                . 'has a WebSite node but no Organization node and no publisher.';
+        }
+
+        foreach (['about_page' => 'AboutPage', 'contact_page' => 'ContactPage'] as $key => $type) {
+            $id = $config->int('structured_data.' . $key);
+
+            if ($id > 0 && get_post_status($id) !== 'publish') {
+                $warnings[] = sprintf(
+                    'structured_data.%s points to page %d, which is not a published page.',
+                    $key,
+                    $id
+                );
+            } elseif ($id > 0 && get_post_type($id) !== 'page') {
+                $warnings[] = sprintf('structured_data.%s points to %d, which is not a page (%s).', $key, $id, $type);
+            }
+        }
+
         $constant = $provider->constant();
 
         return [
@@ -81,6 +106,27 @@ final class Report
             ],
             'ownership' => $ownership->toArray(),
             'sitemap' => $this->sitemap(),
+            'identity' => [
+                'configured' => $identity->isConfigured(),
+                'type' => $identity->type,
+                'schema_type' => $identity->schemaType(),
+                'name' => $identity->name,
+                'logo' => $identity->logo !== [],
+                'address' => $identity->hasPostalAddress()
+                    ? 'complete'
+                    : ($identity->hasAnyAddress() ? 'partial' : 'none'),
+                'same_as' => count($identity->sameAs),
+            ],
+            'structured_data' => [
+                'owner' => $ownership->of(Signal::StructuredData)->value,
+                'about_page' => $config->int('structured_data.about_page'),
+                'contact_page' => $config->int('structured_data.contact_page'),
+                'author_profiles' => $config->bool('structured_data.author_profiles'),
+            ],
+            'breadcrumbs' => [
+                'enabled' => $config->bool('breadcrumbs.enabled'),
+                'schema_owner' => $ownership->of(Signal::Breadcrumbs)->value,
+            ],
             'config' => $config->all(),
             'issues' => $config->issues(),
             'warnings' => $warnings,

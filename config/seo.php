@@ -25,7 +25,15 @@
  * - sitemap.exclude_noindex (true), sitemap.users (false): core sitemap filters.
  * - social.twitter_card ("summary_large_image" | "summary"), social.twitter_site
  *   (""), social.image_size ("wide"), social.default_image (0, attachment ID).
- * - content.article_post_types (["post"]): post types presented as articles.
+ * - content.article_post_types (["post"]): post types presented as articles
+ *   (og:type, dates, BlogPosting/Article nodes).
+ * - fallbacks.structured_data (true): JSON-LD graph without a plugin.
+ * - structured_data.about_page / contact_page (0): page IDs typed as AboutPage
+ *   and ContactPage; pages can also carry the "Structured data page type" field.
+ * - structured_data.author_profiles (false): ProfilePage on author archives and
+ *   author archive URLs in Person nodes.
+ * - breadcrumbs.enabled (false): breadcrumb trail in the page header and the
+ *   BreadcrumbList node; breadcrumbs.home_label (""): label of the first item.
  */
 
 declare(strict_types=1);

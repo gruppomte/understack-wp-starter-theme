@@ -72,31 +72,42 @@ final class Social
      */
     public static function image(PageContext $context, Config $config): ?array
     {
+        $featured = $context->isSingular() ? self::featuredImage($context->objectId, $config) : null;
+
+        return $featured ?? self::attachment($config->int('social.default_image'), $config);
+    }
+
+    /**
+     * The featured image of a post in the configured social size, or null.
+     *
+     * @return array{url: string, width: int, height: int, alt: string}|null
+     */
+    public static function featuredImage(int $postId, Config $config): ?array
+    {
+        return has_post_thumbnail($postId) ? self::attachment((int) get_post_thumbnail_id($postId), $config) : null;
+    }
+
+    /**
+     * @return array{url: string, width: int, height: int, alt: string}|null
+     */
+    private static function attachment(int $id, Config $config): ?array
+    {
+        if ($id <= 0) {
+            return null;
+        }
+
         $size = $config->string('social.image_size');
-        $size = $size === '' ? 'wide' : $size;
-        $ids = [];
+        $source = wp_get_attachment_image_src($id, $size === '' ? 'wide' : $size);
 
-        if ($context->isSingular() && has_post_thumbnail($context->objectId)) {
-            $ids[] = (int) get_post_thumbnail_id($context->objectId);
+        if (! is_array($source) || ! is_string($source[0]) || $source[0] === '') {
+            return null;
         }
 
-        if ($config->int('social.default_image') > 0) {
-            $ids[] = $config->int('social.default_image');
-        }
-
-        foreach ($ids as $id) {
-            $source = wp_get_attachment_image_src($id, $size);
-
-            if (is_array($source) && is_string($source[0]) && $source[0] !== '') {
-                return [
-                    'url' => $source[0],
-                    'width' => (int) $source[1],
-                    'height' => (int) $source[2],
-                    'alt' => (string) get_post_meta($id, '_wp_attachment_image_alt', true),
-                ];
-            }
-        }
-
-        return null;
+        return [
+            'url' => $source[0],
+            'width' => (int) $source[1],
+            'height' => (int) $source[2],
+            'alt' => (string) get_post_meta($id, '_wp_attachment_image_alt', true),
+        ];
     }
 }

@@ -23,6 +23,7 @@ final class Config
             'description' => true,
             'canonical' => true,
             'social' => true,
+            'structured_data' => true,
         ],
         'with_provider' => [],
         'indexability' => [
@@ -47,6 +48,15 @@ final class Config
         'content' => [
             'article_post_types' => ['post'],
         ],
+        'structured_data' => [
+            'about_page' => 0,
+            'contact_page' => 0,
+            'author_profiles' => false,
+        ],
+        'breadcrumbs' => [
+            'enabled' => false,
+            'home_label' => '',
+        ],
     ];
 
     /** @var array<string, array{0: string, 1?: string[]}> Validation rule per dotted key. */
@@ -59,7 +69,8 @@ final class Config
         'fallbacks.description' => ['bool'],
         'fallbacks.canonical' => ['bool'],
         'fallbacks.social' => ['bool'],
-        'with_provider' => ['enum_list', ['description', 'canonical', 'social']],
+        'fallbacks.structured_data' => ['bool'],
+        'with_provider' => ['enum_list', ['description', 'canonical', 'social', 'structured_data']],
         'indexability.non_production' => ['enum', ['noindex', 'off']],
         'indexability.production_hosts' => ['hosts'],
         'indexability.x_robots_tag' => ['bool'],
@@ -74,6 +85,11 @@ final class Config
         'social.image_size' => ['key'],
         'social.default_image' => ['int'],
         'content.article_post_types' => ['keys'],
+        'structured_data.about_page' => ['int'],
+        'structured_data.contact_page' => ['int'],
+        'structured_data.author_profiles' => ['bool'],
+        'breadcrumbs.enabled' => ['bool'],
+        'breadcrumbs.home_label' => ['text'],
     ];
 
     /**
@@ -268,6 +284,7 @@ final class Config
             'key' => is_string($value) ? self::key($value) : null,
             'hosts' => self::stringList($value, static fn (string $item): ?string => Text::host($item) ?: null),
             'handle' => self::handle($value),
+            'text' => self::text($value),
             default => null,
         };
     }
@@ -300,6 +317,20 @@ final class Config
     private static function key(string $value): ?string
     {
         return preg_match('/^[a-z0-9_-]+$/i', $value) === 1 ? strtolower($value) : null;
+    }
+
+    /**
+     * Short plain text (labels): trimmed, no tags or control characters, at most 80 characters.
+     */
+    private static function text(mixed $value): ?string
+    {
+        if (! is_string($value)) {
+            return null;
+        }
+
+        $value = trim(preg_replace('/[\x00-\x1F\x7F]+/', ' ', $value) ?? '');
+
+        return ! str_contains($value, '<') && mb_strlen($value) <= 80 ? $value : null;
     }
 
     private static function handle(mixed $value): ?string

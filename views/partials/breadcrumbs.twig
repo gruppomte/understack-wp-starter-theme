@@ -1,0 +1,21 @@
+{#
+  Breadcrumb trail of the SEO foundation. Parameters: items (list of { name, url });
+  the last item is the current page. Rendered only when breadcrumbs are enabled in
+  config/seo.php (docs/seo-geo/03-configuration.md); nothing is printed otherwise.
+#}
+{% if items|length > 1 %}
+  <nav class="mb-4 text-sm text-ink-muted" aria-label="{{ __('Breadcrumb', 'understack-wp-starter')|esc_attr }}">
+    <ol class="flex flex-wrap items-center gap-x-2 gap-y-1">
+      {% for item in items %}
+        <li class="flex items-center gap-x-2">
+          {% if not loop.first %}<span aria-hidden="true">/</span>{% endif %}
+          {% if item.url and not loop.last %}
+            <a class="underline hover:no-underline" href="{{ item.url|esc_url }}">{{ item.name|e }}</a>
+          {% else %}
+            <span{% if loop.last %} aria-current="page"{% endif %}>{{ item.name|e }}</span>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ol>
+  </nav>
+{% endif %}

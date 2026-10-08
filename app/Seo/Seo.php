@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace Understack\Seo;
 
+use Twig\Environment as TwigEnvironment;
+use Twig\TwigFunction;
 use Understack\Seo\Diagnostics\Command;
 use Understack\Seo\Diagnostics\SiteHealth;
+use Understack\Seo\Identity\Identity;
+use Understack\Seo\Identity\Repository;
 use Understack\Seo\Indexability\Environment;
 use Understack\Seo\Indexability\Policy;
 use Understack\Seo\Indexability\Verdict;
@@ -32,6 +36,10 @@ final class Seo implements Registrable
 
     private ?Verdict $environment = null;
 
+    private ?Identity $identity = null;
+
+    private ?Breadcrumbs $breadcrumbs = null;
+
     public static function current(): ?self
     {
         return self::$current;
@@ -53,6 +61,7 @@ final class Seo implements Registrable
         (new Policy($this))->register();
         (new Head($this))->register();
         add_filter('get_canonical_url', [Canonical::class, 'withoutImplicitCommentPage'], 10, 2);
+        add_filter('timber/twig', [$this, 'extendTwig']);
         (new Sitemap($this))->register();
         (new SiteHealth($this))->register();
 
@@ -86,6 +95,26 @@ final class Seo implements Registrable
     public function environment(): Verdict
     {
         return $this->environment ??= Environment::current($this->config());
+    }
+
+    public function identity(): Identity
+    {
+        return $this->identity ??= Repository::load();
+    }
+
+    public function breadcrumbs(): Breadcrumbs
+    {
+        return $this->breadcrumbs ??= new Breadcrumbs($this);
+    }
+
+    /**
+     * breadcrumbs() in Twig: the trail of the current request, empty unless enabled.
+     */
+    public function extendTwig(TwigEnvironment $twig): TwigEnvironment
+    {
+        $twig->addFunction(new TwigFunction('breadcrumbs', [$this->breadcrumbs(), 'items']));
+
+        return $twig;
     }
 
     /**

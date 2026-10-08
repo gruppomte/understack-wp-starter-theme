@@ -6,6 +6,9 @@ namespace Understack\Seo\Meta;
 
 use Understack\Seo\Seo;
 use Understack\Seo\Signal;
+use Understack\Seo\StructuredData\Collector;
+use Understack\Seo\StructuredData\Graph;
+use Understack\Seo\StructuredData\Serializer;
 use Understack\Seo\Text;
 
 /**
@@ -27,7 +30,8 @@ final class Head
      * @return array{
      *     description: string,
      *     canonical: string|null,
-     *     social: array<int, array{0: string, 1: string, 2: string}>
+     *     social: array<int, array{0: string, 1: string, 2: string}>,
+     *     jsonld: string
      * }
      */
     public function resolve(): array
@@ -51,7 +55,21 @@ final class Head
             $social = Social::tags($context, $config, Text::plain(wp_get_document_title()), $description, $url);
         }
 
-        return ['description' => $description, 'canonical' => $canonical, 'social' => $social];
+        $jsonld = '';
+
+        if ($ownership->themeOwns(Signal::StructuredData) && $context->isIndexable() && ! self::isWooCommercePage()) {
+            $jsonld = Serializer::encode(Graph::build((new Collector($this->seo))->collect()));
+        }
+
+        return ['description' => $description, 'canonical' => $canonical, 'social' => $social, 'jsonld' => $jsonld];
+    }
+
+    /**
+     * WooCommerce emits its own WebSite, BreadcrumbList and Product nodes on shop pages.
+     */
+    private static function isWooCommercePage(): bool
+    {
+        return function_exists('is_woocommerce') && is_woocommerce();
     }
 
     public function render(): void
@@ -77,6 +95,11 @@ final class Head
                 esc_attr($key),
                 esc_attr($value)
             );
+        }
+
+        if ($resolved['jsonld'] !== '') {
+            // The JSON is encoded with the HTML-safe flags of Serializer (no "<", ">", "&", quotes).
+            wp_print_inline_script_tag($resolved['jsonld'], ['type' => 'application/ld+json']);
         }
     }
 }

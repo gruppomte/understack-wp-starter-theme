@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Understack WP Starter 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-08T07:23:38+00:00\n"
+"POT-Creation-Date: 2026-10-08T08:32:52+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -47,6 +47,26 @@ msgstr ""
 msgid "Footer navigation"
 msgstr ""
 
+#: app/Seo/Breadcrumbs.php:214
+msgid "Author"
+msgstr ""
+
+#: app/Seo/Breadcrumbs.php:95
+msgid "Home"
+msgstr ""
+
+#: app/Seo/Breadcrumbs.php:99
+msgid "Page %d"
+msgstr ""
+
+#: app/Seo/Diagnostics/SiteHealth.php:100
+msgid "SEO foundation"
+msgstr ""
+
+#: app/Seo/Diagnostics/SiteHealth.php:101
+msgid "Who emits each SEO signal, the environment policy and the configuration warnings."
+msgstr ""
+
 #: app/Seo/Diagnostics/SiteHealth.php:38
 msgid "Environment"
 msgstr ""
@@ -80,23 +100,40 @@ msgid "Owner of %s"
 msgstr ""
 
 #: app/Seo/Diagnostics/SiteHealth.php:67
-msgid "XML sitemap"
+msgid "Organisation identity"
 msgstr ""
 
-#: app/Seo/Diagnostics/SiteHealth.php:72
-msgid "Warnings"
-msgstr ""
-
-#: app/Seo/Diagnostics/SiteHealth.php:73
-msgid "none"
-msgstr ""
-
-#: app/Seo/Diagnostics/SiteHealth.php:77
-msgid "SEO foundation"
+#: app/Seo/Diagnostics/SiteHealth.php:74
+msgid "not configured"
 msgstr ""
 
 #: app/Seo/Diagnostics/SiteHealth.php:78
-msgid "Who emits each SEO signal, the environment policy and the configuration warnings."
+msgid "Structured data"
+msgstr ""
+
+#. translators: 1: owner of the JSON-LD graph, 2: enabled/disabled
+#: app/Seo/Diagnostics/SiteHealth.php:81
+msgid "graph: %1$s; breadcrumbs: %2$s"
+msgstr ""
+
+#: app/Seo/Diagnostics/SiteHealth.php:84
+msgid "enabled"
+msgstr ""
+
+#: app/Seo/Diagnostics/SiteHealth.php:85
+msgid "disabled"
+msgstr ""
+
+#: app/Seo/Diagnostics/SiteHealth.php:90
+msgid "XML sitemap"
+msgstr ""
+
+#: app/Seo/Diagnostics/SiteHealth.php:95
+msgid "Warnings"
+msgstr ""
+
+#: app/Seo/Diagnostics/SiteHealth.php:96
+msgid "none"
 msgstr ""
 
 #: blocks/hero/block.twig:15
@@ -136,6 +173,10 @@ msgstr ""
 
 #: views/layouts/base.twig:11
 msgid "Skip to content"
+msgstr ""
+
+#: views/partials/breadcrumbs.twig:7
+msgid "Breadcrumb"
 msgstr ""
 
 #: views/partials/comment.twig:12
@@ -185,7 +226,7 @@ msgstr ""
 msgid "All posts"
 msgstr ""
 
-#: views/singles/single.twig:39
+#: views/singles/single.twig:40
 msgid "Tags"
 msgstr ""
 

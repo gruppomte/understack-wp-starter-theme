@@ -32,6 +32,7 @@ final class Ownership
         };
 
         $canonical = $fallback(Signal::Canonical);
+        $structuredData = $fallback(Signal::StructuredData);
 
         return new self([
             Signal::Title->value => $coreUnlessProvider,
@@ -42,6 +43,13 @@ final class Ownership
             Signal::Social->value => $fallback(Signal::Social),
             Signal::Sitemap->value => $coreUnlessProvider,
             Signal::RobotsTxt->value => $coreUnlessProvider,
+            Signal::StructuredData->value => $structuredData,
+            // The BreadcrumbList node belongs to whoever emits the graph; the visual trail is independent.
+            Signal::Breadcrumbs->value => $hasProvider && $structuredData !== Owner::Theme
+                ? Owner::Provider
+                : ($structuredData === Owner::Theme && $config->bool('breadcrumbs.enabled')
+                    ? Owner::Theme
+                    : Owner::None),
         ]);
     }
 

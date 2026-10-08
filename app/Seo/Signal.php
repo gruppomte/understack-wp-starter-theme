@@ -16,4 +16,6 @@ enum Signal: string
     case Social = 'social';
     case Sitemap = 'sitemap';
     case RobotsTxt = 'robots_txt';
+    case StructuredData = 'structured_data';
+    case Breadcrumbs = 'breadcrumbs';
 }

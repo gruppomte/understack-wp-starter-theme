@@ -63,6 +63,29 @@ final class SiteHealth
         }
 
         $field(
+            'identity',
+            __('Organisation identity', 'understack-wp-starter'),
+            $report['identity']['configured']
+                ? sprintf(
+                    '%s (%s)',
+                    $report['identity']['name'],
+                    $report['identity']['schema_type']
+                )
+                : __('not configured', 'understack-wp-starter')
+        );
+        $field(
+            'structured_data',
+            __('Structured data', 'understack-wp-starter'),
+            sprintf(
+                /* translators: 1: owner of the JSON-LD graph, 2: enabled/disabled */
+                __('graph: %1$s; breadcrumbs: %2$s', 'understack-wp-starter'),
+                $report['structured_data']['owner'],
+                $report['breadcrumbs']['enabled']
+                    ? __('enabled', 'understack-wp-starter')
+                    : __('disabled', 'understack-wp-starter')
+            )
+        );
+        $field(
             'sitemap',
             __('XML sitemap', 'understack-wp-starter'),
             $report['sitemap']['url'] !== '' ? $report['sitemap']['url'] : $report['sitemap']['owner']

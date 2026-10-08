@@ -2,10 +2,13 @@
   Page header used by pages, archives and system pages.
   Parameters: title (HTML from WordPress), lead (plain text), description (HTML),
   hidden (bool: the content provides the main heading, for example a hero block).
+  The breadcrumb trail comes from the SEO foundation and is empty unless enabled.
   The heading is painted immediately: it is usually the LCP element.
 #}
-{% if not hidden or lead or description %}
+{% set breadcrumb_items = breadcrumbs() %}
+{% if not hidden or lead or description or breadcrumb_items|length > 1 %}
   <header class="wrap py-10 md:py-16">
+    {% include 'partials/breadcrumbs.twig' with { items: breadcrumb_items } only %}
     {% if not hidden %}
       <h1 class="text-display font-semibold tracking-tight">{{ title }}</h1>
     {% endif %}
