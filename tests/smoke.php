@@ -169,7 +169,8 @@ if ($seo instanceof Understack\Seo\Seo) {
         $identity->isConfigured() ? $identity->schemaType() . ' ' . $identity->name : 'not configured'
     );
 
-    $nodes = Understack\Seo\StructuredData\Graph::build((new Understack\Seo\StructuredData\Collector($seo))->collect());
+    $collector = new Understack\Seo\StructuredData\Collector($seo);
+    $nodes = Understack\Seo\StructuredData\Graph::build($collector->collect());
     $check(
         'SEO structured data graph',
         $nodes !== [] && Understack\Seo\StructuredData\Graph::danglingReferences($nodes) === []
