@@ -27,7 +27,7 @@ Activate the theme in Appearance → Themes (or `wp theme activate <slug>`). ACF
 
 ### Local site conventions
 
-Copy `.env.example` to `.env.local` (ignored by Git), fill in the local password and run `npm run local:setup` once per local site. It is idempotent and only runs on sites whose environment type is `local` or `development`:
+Copy `.env.example` to `.env.local` (ignored by Git), fill in your development email and the local password and run `npm run local:setup` once per local site. It is idempotent and only runs on sites whose environment type is `local` or `development`:
 
 - the login screen moves to `/<WP_LOGIN_SLUG>/` (default `_admin`): the must-use plugin in `site/mu-plugins/login-slug.php` is copied to `wp-content/mu-plugins/` and `WP_LOGIN_SLUG` is added to `wp-config.php`. `_admin` is a URL, never a username;
 - the existing Administrator (never renamed, never duplicated) gets the development email from `WP_ADMIN_EMAIL`, which also becomes the Administration Email Address;
@@ -196,7 +196,7 @@ Principles: ship little JavaScript (the main bundle is a few KB; Alpine and GSAP
 - `composer test:unit`: unit tests for the pure PHP logic (configuration validation, provider detection, ownership, environment policy, text summaries, pagination URLs) without WordPress.
 - `npm run test:scripts`: `node:test` suite for the Node tooling (residue scan).
 - `npm run test:e2e`: Playwright. Without `BASE_URL` it boots two WordPress Playgrounds (PHP in WebAssembly, no Docker) with `tests/playground/seed.php`: one as production, one declaring `WP_ENVIRONMENT_TYPE=staging` for the indexability checks. With `BASE_URL` it runs against any site (set `SEO_ENVIRONMENT=production` or `staging` to include the SEO specs there). Covers the homepage, navigation, mobile menu, sub-menus, 404, console errors and the SEO head output.
-- `node tests/seo-report.mjs --url …`: Markdown report of the head output of a running site (titles, descriptions, canonicals, robots, social metadata, JSON-LD, headings, landmarks, duplicates); the reports for the local site with and without SEO plugins are kept in `docs/seo-geo/08-head-reports`.
+- `node tests/seo-report.mjs --url …`: Markdown report of the head output of a running site (titles, descriptions, canonicals, robots, social metadata, JSON-LD, headings, landmarks, duplicates); keep the reports for the local site with and without SEO plugins in `docs/seo-geo/08-head-reports`.
 - `.github/workflows/ci.yml` runs lint, analysis, unit tests, build, tooling tests and the end-to-end suite (two Playgrounds) on every push to `main` or to a `feature/**` branch and on pull requests.
 
 Project-specific tests belong in the project; the suite here is the baseline.
@@ -222,4 +222,4 @@ npm run setup                                  # interactive
 npm run setup -- --name "Client Name" --yes    # defaults
 ```
 
-The initializer renames the theme (directory, package names, theme header, text domain, PHP namespace, asset handles, block text domains), optionally removes WooCommerce, GSAP, Alpine or ACF, reinstalls dependencies, builds, and runs the residue scan: the resulting project contains no reference to this base and is ready to version on its own. Re-running it on an initialised project renames it again.
+The initializer renames the theme (directory, package names, theme header, text domain, PHP namespace, asset handles, block text domains), optionally removes WooCommerce, GSAP, Alpine or ACF, leaves out the base's own history in `docs/seo-geo` (audit, implementation plan, increment and release reports, head reports) while keeping the reference documents, reinstalls dependencies, builds, and runs the residue scan: the resulting project contains no reference to this base and is ready to version on its own. Re-running it on an initialised project renames it again.

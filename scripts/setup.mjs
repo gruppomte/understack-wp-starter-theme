@@ -372,6 +372,22 @@ function applyFeatures(features) {
   }
 }
 
+/**
+ * The history of this base (baseline audit, implementation plan, increment and
+ * release reports, head reports of its reference site) records how it was
+ * built, with its names, repository and archives: it is not carried over. The
+ * reference documents in docs/ stay and never point to it.
+ */
+const STARTER_HISTORY = [
+  'docs/seo-geo/00-audit.md',
+  'docs/seo-geo/02-implementation-plan.md',
+  'docs/seo-geo/08-head-reports',
+  'docs/seo-geo/09-increment-a-report.md',
+  'docs/seo-geo/10-increment-b-report.md',
+  'docs/seo-geo/11-increment-c-report.md',
+  'docs/seo-geo/13-release-candidate.md',
+];
+
 /** Upper-case Markdown files in the root (README.md, CONTRIBUTING.md, …) are project documentation. */
 const isDocumentation = (entry) => /^[A-Z]+\.md$/.test(entry);
 
@@ -387,6 +403,13 @@ function removeStarterFiles(next) {
       editFile(entry, (content) => content.split(current.name).join(next.name));
     }
   }
+
+  for (const path of STARTER_HISTORY) {
+    io.remove(join(root, path));
+  }
+
+  // The documentation index keeps its reference section only.
+  editFile('docs/seo-geo/README.md', (content) => content.replace(/\n+## History\n[\s\S]*$/, '\n'));
 }
 
 function renameDirectory(next) {

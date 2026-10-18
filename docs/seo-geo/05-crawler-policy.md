@@ -1,6 +1,6 @@
 # SEO/GEO Foundation — Crawler Policy (Increment C)
 
-Status: implemented on branch `feature/seo-geo-foundation`. The theme ships no user-agent list and no vendor URL: every token below comes from the vendors' public documentation, verified on 2026-10-08 (`00-audit.md` §8), and every rule comes from the site owner's `config/seo.php`.
+Status: implemented. The theme ships no user-agent list and no vendor URL: every token below comes from the vendors' public documentation, verified on 2026-10-08, and every rule comes from the site owner's `config/seo.php`.
 
 ## 1. What the theme does and does not do
 

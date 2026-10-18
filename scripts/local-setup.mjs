@@ -27,7 +27,8 @@ function fail(message) {
 }
 
 if (!existsSync(join(root, 'style.css'))) fail('Run this command from the theme directory.');
-if (!env.WP_ADMIN_EMAIL) fail('WP_ADMIN_EMAIL is not set: copy .env.example to .env.local.');
+if (!env.WP_ADMIN_EMAIL)
+  fail('WP_ADMIN_EMAIL is not set: copy .env.example to .env.local and fill it in.');
 if (!commandExists('wp')) fail('WP-CLI ("wp") is required on the PATH.');
 
 function findWordPress() {

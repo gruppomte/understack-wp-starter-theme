@@ -1,6 +1,6 @@
 # SEO/GEO Foundation — Structured Data, Identity and Breadcrumbs (Increment B)
 
-Status: implemented on branch `feature/seo-geo-foundation`. Configuration keys are listed in `03-configuration.md`; this document explains what the graph contains, where every value comes from and what it does not claim.
+Status: implemented. Configuration keys are listed in `03-configuration.md`; this document explains what the graph contains, where every value comes from and what it does not claim.
 
 ## 1. When the theme emits a graph
 
@@ -9,7 +9,7 @@ Status: implemented on branch `feature/seo-geo-foundation`. Configuration keys a
 - The environment policy does not suppress the graph: a staging copy is `noindex` and still renders the same markup, so what you see on staging is what production will emit.
 - One `<script type="application/ld+json">` per page, printed by the same head callback as the description and social tags, encoded with HTML-safe flags (no `<`, `>`, `&` or quotes survive unescaped) and pruned of empty values.
 
-With Rank Math or Yoast active the theme prints nothing: both plugins emit their own graph (verified in `08-head-reports/`). The theme does not inject nodes into a plugin's graph; that integration is not supported.
+With Rank Math or Yoast active the theme prints nothing: both plugins emit their own graph (verified with the head report, `tests/seo-report.mjs`). The theme does not inject nodes into a plugin's graph; that integration is not supported.
 
 ## 2. Nodes
 
@@ -173,4 +173,4 @@ Schema.org validity and Google eligibility are different things. Google's docume
 
 - Unit: `composer test:unit` (identity validation, type list, author privacy, graph assembly and references, serializer, breadcrumb trail).
 - End-to-end: `npm run test:e2e` asserts the graph on real pages of the production Playground (organisation with logo, website, collection page, article with and without a person, About and Contact pages, no graph on search and 404, breadcrumbs absent) and of the staging Playground with `tests/playground/seo-features.php` (breadcrumb trail and BreadcrumbList, paginated listings, author profile pages).
-- Local matrix: `08-head-reports/` shows the theme graph without a plugin and the plugin graphs with Rank Math and Yoast, with no duplicate blocks.
+- Local matrix: the head reports (`tests/seo-report.mjs`) show the theme graph without a plugin and the plugin graphs with Rank Math and Yoast, with no duplicate blocks.
