@@ -21,6 +21,7 @@ import {
   escapeRegExp,
   parseArgs,
   readIdentity,
+  renameNamespace,
   run,
   toBoolean,
   walk,
@@ -174,10 +175,6 @@ function renameKey(object, from, to) {
 function replaceIdentifiers(next) {
   const textDomain = escapeRegExp(current.textDomain);
   const domainPattern = new RegExp(`(['"])${textDomain}\\1(\\s*\\))`, 'g');
-  const namespacePattern = new RegExp(
-    `(?<![\\w\\\\])${escapeRegExp(current.namespace)}(?=\\\\)`,
-    'g',
-  );
   const slugConstant = new RegExp(`(const SLUG = ')${escapeRegExp(current.slug)}(')`);
   const domainConstant = new RegExp(`(const TEXT_DOMAIN = ')${textDomain}(')`);
 
@@ -234,8 +231,7 @@ function replaceIdentifiers(next) {
     );
 
     if (file.endsWith('.php')) {
-      content = content
-        .replace(namespacePattern, next.namespace)
+      content = renameNamespace(content, current.namespace, next.namespace)
         .replace(slugConstant, (_, prefix, suffix) => `${prefix}${next.slug}${suffix}`)
         .replace(domainConstant, (_, prefix, suffix) => `${prefix}${next.textDomain}${suffix}`);
     }

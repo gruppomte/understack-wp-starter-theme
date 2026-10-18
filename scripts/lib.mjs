@@ -106,6 +106,18 @@ export function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+/**
+ * Renames the root PHP namespace in source code: qualified names
+ * (`Acme\Seo\Signal`), fully qualified names (`\Acme\Seo\Signal`) and their
+ * escaped form in strings (`'\\Acme\\Seo'`). A segment of another namespace
+ * (`Vendor\Acme\…`) is left alone.
+ */
+export function renameNamespace(content, from, to) {
+  const pattern = new RegExp(`(?<![\\w\\\\])(\\\\{0,2})${escapeRegExp(from)}(?=\\\\)`, 'g');
+
+  return content.replace(pattern, (_, prefix) => `${prefix}${to}`);
+}
+
 /** Windows ships npm, npx and composer as .cmd shims; resolving them avoids a shell. */
 function executable(command) {
   if (process.platform === 'win32' && ['npm', 'npx', 'composer'].includes(command)) {
