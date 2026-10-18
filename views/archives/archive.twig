@@ -10,7 +10,7 @@
       {% if posts|length > 0 %}
         {% include 'components/post-grid.twig' with { posts: posts } only %}
       {% else %}
-        {% include 'system/no-content.twig' with { search_form: show_search_form|default(true) } only %}
+        {% include 'system/no-content.twig' with { search_form: show_search_form ?? true, site: site } only %}
       {% endif %}
     {% endblock %}
 

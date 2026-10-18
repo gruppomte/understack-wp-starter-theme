@@ -1,7 +1,7 @@
-{# Empty state. Parameters: search_form (default true; false where a search form is already on the page). #}
+{# Empty state. Parameters: search_form (default true; false where a search form is already on the page), site (for the form action). #}
 <div class="max-w-xl space-y-6">
   <p class="text-ink-muted">{{ __('Nothing was found.', 'understack-wp-starter') }}</p>
-  {% if search_form|default(true) %}
-    {% include 'partials/search-form.twig' with { id: 'no-content' } %}
+  {% if search_form ?? true %}
+    {% include 'partials/search-form.twig' with { id: 'no-content', site: site } only %}
   {% endif %}
 </div>
