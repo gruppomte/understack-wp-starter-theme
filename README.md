@@ -4,6 +4,8 @@ A WordPress theme base for custom, professionally developed sites: Timber 2 and 
 
 Every client project starts from this codebase and becomes independent after `npm run setup` (see "Starting a project").
 
+`UNDERSTACK.md` lists the conventions that must not regress and the definition of done; developers and coding agents read it before changing the theme. It is development-only: it never ships and the residue scan skips it.
+
 ## Requirements
 
 - PHP 8.3 or newer, Composer 2

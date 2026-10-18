@@ -26,10 +26,16 @@ const TERMS = JSON.parse(
 const SELF = fileURLToPath(import.meta.url);
 
 /**
+ * Conventions file for developers and coding agents. Its name is a path that
+ * other files may cite, so a reference to it is not a residue.
+ */
+export const CONVENTIONS_FILE = 'UNDERSTACK.md';
+
+/**
  * Development-only files that never ship (release.mjs excludes them) and may
  * name the tools used while developing.
  */
-const DEVELOPMENT_ONLY = new Set(['CLAUDE.md', '.env.example']);
+const DEVELOPMENT_ONLY = new Set([CONVENTIONS_FILE, '.env.example']);
 
 /** Development-only directories: documentation never ships and may name third-party crawlers and tools. */
 const DEVELOPMENT_ONLY_DIRECTORIES = ['docs/'];
@@ -72,8 +78,10 @@ export function scan(root, { strict = false, identity = readIdentity(root) } = {
     const lines = readFileSync(file, 'utf8').split(/\r?\n/);
 
     lines.forEach((line, index) => {
+      const text = line.split(CONVENTIONS_FILE).join('');
+
       for (const term of TERMS) {
-        if (new RegExp(escapeRegExp(term), 'i').test(line)) {
+        if (new RegExp(escapeRegExp(term), 'i').test(text)) {
           matches.push({
             file: relative(root, file),
             line: index + 1,
