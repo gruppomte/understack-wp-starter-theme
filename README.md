@@ -136,6 +136,7 @@ Third-party scripts (analytics, maps, chat) are not included. Add them with `Ass
 - Theme UI state (dropdowns, accordions, tabs, toggles, modal state): Alpine.js. It is bundled but loaded only when a `[x-data]` element is on the page. Projects with a strict Content Security Policy should switch `src/js/modules/alpine.js` to `@alpinejs/csp`.
 - Interactive, reusable Gutenberg blocks: evaluate the WordPress Interactivity API first (`viewScriptModule` with `@wordpress/interactivity`).
 - Complex animation: GSAP, in `src/js/animations`, loaded only when `data-animate`, `data-animate-stagger`, `data-hero` or `data-parallax` markup exists.
+- Smooth scrolling: [Lenis](https://lenis.dev/), in `src/js/modules/scroll.js`, loaded on devices with a fine pointer that allow motion; touch devices and visitors who prefer reduced motion keep native scrolling. It runs on the native scroll, so sticky elements, keyboard scrolling, focus and anchor links (offset by the `scroll-padding-top` of `base.css`) keep working; nested scrollers scroll natively, the page stops while a modal is open, and ScrollTrigger follows its frames when GSAP is loaded. Opt a project out with the body class `no-smooth-scroll`, or leave it out at initialisation (`--smooth-scroll no`).
 
 Animations respect `prefers-reduced-motion` and never hide content before JavaScript runs: scroll reveals apply only to elements below the fold at load, animate opacity (content stays in the accessibility tree) and complete when an element receives focus. Keep the LCP element (main heading, hero image) out of entrance animations.
 
@@ -176,7 +177,7 @@ No SVG uploads are enabled, no secrets live in the repository, and the Vite dev 
 
 ## Performance
 
-Principles: ship little JavaScript (the main bundle is a few KB; Alpine and GSAP load on demand), one stylesheet, no render-blocking third-party assets, images sized per placement, no query per item in loops, template caching for Twig outside local environments. Recommended budgets per page, to adapt per project:
+Principles: ship little JavaScript (the main bundle is a few KB; Alpine, GSAP and Lenis load on demand), one stylesheet, no render-blocking third-party assets, images sized per placement, no query per item in loops, template caching for Twig outside local environments. Recommended budgets per page, to adapt per project:
 
 | Metric                    | Budget                       |
 | ------------------------- | ---------------------------- |
@@ -222,4 +223,4 @@ npm run setup                                  # interactive
 npm run setup -- --name "Client Name" --yes    # defaults
 ```
 
-The initializer renames the theme (directory, package names, theme header, text domain, PHP namespace, asset handles, block text domains), optionally removes WooCommerce, GSAP, Alpine or ACF, leaves out the base's own history in `docs/seo-geo` (audit, implementation plan, increment and release reports, head reports) while keeping the reference documents, reinstalls dependencies, builds, and runs the residue scan: the resulting project contains no reference to this base and is ready to version on its own. Re-running it on an initialised project renames it again.
+The initializer renames the theme (directory, package names, theme header, text domain, PHP namespace, asset handles, block text domains), optionally removes WooCommerce, GSAP, Alpine, smooth scrolling or ACF, leaves out the base's own history in `docs/seo-geo` (audit, implementation plan, increment and release reports, head reports) while keeping the reference documents, reinstalls dependencies, builds, and runs the residue scan: the resulting project contains no reference to this base and is ready to version on its own. Re-running it on an initialised project renames it again.
