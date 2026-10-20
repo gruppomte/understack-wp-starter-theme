@@ -27,7 +27,7 @@ Details: `05-crawler-policy.md`, `06-content-semantics.md`, `07-compatibility.md
 
 Created: `app/Seo/Crawlers/{Groups,Policy}.php`, `app/Seo/Integrations/{Wpml,WooCommerce}.php`, `app/Seo/Diagnostics/{Checks,Status}.php`, `tests/unit/{CrawlersTest,ChecksTest,IntegrationsTest}.php`, `tests/e2e/semantics.spec.js`, `docs/seo-geo/{05-crawler-policy,06-content-semantics,07-compatibility}.md`, `docs/seo-geo/08-head-reports/local-woocommerce.md`, this report.
 
-Modified: `app/Seo/{Config,Seo,Breadcrumbs}.php`, `app/Seo/Meta/{Head,Description}.php`, `app/Seo/Diagnostics/{Report,Command,SiteHealth}.php`, `config/seo.php`, `tests/stubs/wp-cli.stub`, `tests/e2e/{seo.spec,seo-staging.spec}.js`, `tests/playground/seo-features.php`, `playwright.config.js`, `tests/seo-report.mjs`, `languages/*.pot`, `docs/seo-geo/{01,02,03}-*.md`, `README.md`, `CLAUDE.md`.
+Modified: `app/Seo/{Config,Seo,Breadcrumbs}.php`, `app/Seo/Meta/{Head,Description}.php`, `app/Seo/Diagnostics/{Report,Command,SiteHealth}.php`, `config/seo.php`, `tests/stubs/wp-cli.stub`, `tests/e2e/{seo.spec,seo-staging.spec}.js`, `tests/playground/seo-features.php`, `playwright.config.js`, `tests/seo-report.mjs`, `languages/*.pot`, `docs/seo-geo/{01,02,03}-*.md`, `README.md`, `UNDERSTACK.md`.
 
 No template, stylesheet, script or block changed: the semantic analysis found nothing to fix.
 

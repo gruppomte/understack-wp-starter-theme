@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { test } from 'node:test';
-import { scan } from '../../scripts/scan.mjs';
+import { CONVENTIONS_FILE, scan } from '../../scripts/scan.mjs';
 
 /**
  * Tests for the residue scan. The forbidden term used below is decoded at
@@ -69,6 +69,18 @@ test('local environment files stay out of the scan', () => {
   withFixture({ '.env.local': `TOOL=${term}`, '.env.example': `TOOL=${term}` }, (root) => {
     assert.deepEqual(violatingFiles(root), []);
   });
+});
+
+test('the conventions file is development-only and may be cited by name', () => {
+  withFixture(
+    {
+      [CONVENTIONS_FILE]: `Names ${term} on purpose.`,
+      'README.md': `Read ${CONVENTIONS_FILE} first.`,
+    },
+    (root) => {
+      assert.deepEqual(violatingFiles(root), []);
+    },
+  );
 });
 
 test('a clean tree reports no violations', () => {

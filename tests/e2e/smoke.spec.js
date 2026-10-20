@@ -32,6 +32,19 @@ test('critical navigation reaches a page', async ({ page }) => {
   expect(errors()).toEqual([]);
 });
 
+test('a search without results shows one working search form', async ({ page }) => {
+  const errors = watchErrors(page);
+  const response = await page.goto(`/?s=no-such-term-${Date.now()}`);
+
+  expect(response?.status()).toBe(200);
+  // The results page has its own form: the empty state must not add a second one.
+  const forms = page.locator('main#main-content form[role="search"]');
+  await expect(forms).toHaveCount(1);
+  expect(new URL((await forms.getAttribute('action')) ?? '', page.url()).pathname).toBe('/');
+  await expect(page.locator('main#main-content')).not.toContainText('Deprecated');
+  expect(errors()).toEqual([]);
+});
+
 test('unknown URLs return the 404 template', async ({ page }) => {
   const response = await page.goto(`/no-such-page-${Date.now()}/`);
 

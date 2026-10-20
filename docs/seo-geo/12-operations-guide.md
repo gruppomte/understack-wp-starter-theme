@@ -1,6 +1,6 @@
 # SEO/GEO Foundation — Operations Guide for Client Projects
 
-For the agency team starting a white-label project from this starter. It says what the theme does on its own, what needs the client's data or decision, and what stays outside the theme. Reference documents: `03-configuration.md` (keys), `04-structured-data.md` (graph), `05-crawler-policy.md` (crawlers), `07-compatibility.md` (WPML, WooCommerce).
+For the agency team starting a white-label project from this base. It says what the theme does on its own, what needs the client's data or decision, and what stays outside the theme. Reference documents: `03-configuration.md` (keys), `04-structured-data.md` (graph), `05-crawler-policy.md` (crawlers), `07-compatibility.md` (WPML, WooCommerce).
 
 ## 1. What is automatic and what is not
 
@@ -77,7 +77,7 @@ Compatibility is designed and mock-tested, not certified: no hreflang from the t
 ## 11. Diagnostics
 
 - Site Health → Info → "SEO foundation": one field per check with PASS, WARNING, FAIL or NOT VERIFIED and a summary.
-- `wp <slug> seo report` (replace `<slug>` with the theme slug, `understack-wp-starter` in this repository): checks, measured facts and summary; exit code 1 when a check fails, usable in deployment scripts. `--format=json` for automation. No network request is made.
+- `wp <slug> seo report` (replace `<slug>` with the theme slug, the `name` in `package.json`): checks, measured facts and summary; exit code 1 when a check fails, usable in deployment scripts. `--format=json` for automation. No network request is made.
 - `node tests/seo-report.mjs --url https://www.example.com --label "go-live"`: Markdown head report of a running site (titles, descriptions, canonicals, robots, social tags, JSON-LD types, `html lang`, heading outline, images without alt, empty links, duplicates). From the project repository, Node 22+.
 
 NOT VERIFIED is never a pass: server headers, `robots.txt` as served, user-initiated AI fetchers, indexing status and CDN rules need their own tools.

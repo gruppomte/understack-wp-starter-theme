@@ -117,6 +117,6 @@ Branch `feature/seo-geo-foundation`: Phase 0 (`985a45b`), scan exclusion (`a96e2
 | No second graph with a provider                                    | Provider matrix, ownership tests.                                                                               |
 | Breadcrumbs behind a flag, no layout change when off               | e2e asserts the absence of the nav and the unchanged header; byte-identical markup when disabled.               |
 | No regressions from Increment A                                    | All previous unit and e2e tests pass; `npm run check` green.                                                    |
-| Documentation                                                      | `04-structured-data.md`, updated `01`, `02`, `03`, README, CLAUDE.md, head reports.                             |
+| Documentation                                                      | `04-structured-data.md`, updated `01`, `02`, `03`, README, UNDERSTACK.md, head reports.                         |
 
 Assessment: **GO** for the next increment, with the remote CI run still to be executed before any release.

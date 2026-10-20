@@ -31,7 +31,7 @@ Request lifecycle, defaults and the behaviour per signal are documented in `03-c
 
 Created: `app/Seo/**` (19 classes and enums), `config/seo.php`, `tests/unit/` (runner, bootstrap, 7 test files), `tests/scripts/scan.test.mjs`, `tests/e2e/seo.spec.js`, `tests/e2e/seo-staging.spec.js`, `tests/e2e/seo-helpers.js`, `tests/seo-report.mjs`, `tests/stubs/wp-cli.stub`, `docs/seo-geo/03-configuration.md`, `docs/seo-geo/08-head-reports/*.md`, this report.
 
-Modified: `app/Core/Theme.php` (service registration), `tests/smoke.php` (SEO checks), `tests/playground/seed.php` (two posts per page so listings paginate), `scripts/playground.mjs` (`--env`), `playwright.config.js` (staging Playground and project), `scripts/scan.mjs` (`docs/` development-only), `scripts/check.mjs` (tooling tests step), `scripts/release.mjs` (`config/` ships), `phpstan.neon.dist`, `composer.json` (`test:unit`), `package.json` (`test:scripts`), `.github/workflows/ci.yml` (unit tests in the PHP job), `.prettierignore` (generated head reports), `languages/*.pot`, `README.md`, `CLAUDE.md`, `docs/seo-geo/00-audit.md`, `01-ownership-matrix.md`, `02-implementation-plan.md`.
+Modified: `app/Core/Theme.php` (service registration), `tests/smoke.php` (SEO checks), `tests/playground/seed.php` (two posts per page so listings paginate), `scripts/playground.mjs` (`--env`), `playwright.config.js` (staging Playground and project), `scripts/scan.mjs` (`docs/` development-only), `scripts/check.mjs` (tooling tests step), `scripts/release.mjs` (`config/` ships), `phpstan.neon.dist`, `composer.json` (`test:unit`), `package.json` (`test:scripts`), `.github/workflows/ci.yml` (unit tests in the PHP job), `.prettierignore` (generated head reports), `languages/*.pot`, `README.md`, `UNDERSTACK.md`, `docs/seo-geo/00-audit.md`, `01-ownership-matrix.md`, `02-implementation-plan.md`.
 
 Untouched: templates, styles, scripts, blocks, ACF groups, `functions.php`, `index.php`.
 
@@ -136,7 +136,7 @@ Branch `feature/seo-geo-foundation`, four commits ahead of `v2027.1`, working tr
 | Predictable, tested production/staging/local handling | Unit tests for every environment rule; staging Playground in CI; local site verified (`local` → noindex); contradictions reported, never guessed. |
 | No agency-specific data in defaults                   | `config/seo.php` returns an empty array; residue scan passes.                                                                                     |
 | No visual change                                      | No template, CSS or JavaScript modified.                                                                                                          |
-| Documentation updated                                 | `03-configuration.md`, README, CLAUDE.md, updated Phase 0 documents, head reports, this report.                                                   |
+| Documentation updated                                 | `03-configuration.md`, README, UNDERSTACK.md, updated Phase 0 documents, head reports, this report.                                               |
 | Git state and test results reported precisely         | Sections 7 and 10.                                                                                                                                |
 
 ## 12. Open points for Increment B (structured data)

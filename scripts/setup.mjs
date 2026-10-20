@@ -21,6 +21,7 @@ import {
   escapeRegExp,
   parseArgs,
   readIdentity,
+  renameNamespace,
   run,
   toBoolean,
   walk,
@@ -174,10 +175,6 @@ function renameKey(object, from, to) {
 function replaceIdentifiers(next) {
   const textDomain = escapeRegExp(current.textDomain);
   const domainPattern = new RegExp(`(['"])${textDomain}\\1(\\s*\\))`, 'g');
-  const namespacePattern = new RegExp(
-    `(?<![\\w\\\\])${escapeRegExp(current.namespace)}(?=\\\\)`,
-    'g',
-  );
   const slugConstant = new RegExp(`(const SLUG = ')${escapeRegExp(current.slug)}(')`);
   const domainConstant = new RegExp(`(const TEXT_DOMAIN = ')${textDomain}(')`);
 
@@ -234,8 +231,7 @@ function replaceIdentifiers(next) {
     );
 
     if (file.endsWith('.php')) {
-      content = content
-        .replace(namespacePattern, next.namespace)
+      content = renameNamespace(content, current.namespace, next.namespace)
         .replace(slugConstant, (_, prefix, suffix) => `${prefix}${next.slug}${suffix}`)
         .replace(domainConstant, (_, prefix, suffix) => `${prefix}${next.textDomain}${suffix}`);
     }
@@ -376,6 +372,22 @@ function applyFeatures(features) {
   }
 }
 
+/**
+ * The history of this base (baseline audit, implementation plan, increment and
+ * release reports, head reports of its reference site) records how it was
+ * built, with its names, repository and archives: it is not carried over. The
+ * reference documents in docs/ stay and never point to it.
+ */
+const STARTER_HISTORY = [
+  'docs/seo-geo/00-audit.md',
+  'docs/seo-geo/02-implementation-plan.md',
+  'docs/seo-geo/08-head-reports',
+  'docs/seo-geo/09-increment-a-report.md',
+  'docs/seo-geo/10-increment-b-report.md',
+  'docs/seo-geo/11-increment-c-report.md',
+  'docs/seo-geo/13-release-candidate.md',
+];
+
 /** Upper-case Markdown files in the root (README.md, CONTRIBUTING.md, …) are project documentation. */
 const isDocumentation = (entry) => /^[A-Z]+\.md$/.test(entry);
 
@@ -391,6 +403,13 @@ function removeStarterFiles(next) {
       editFile(entry, (content) => content.split(current.name).join(next.name));
     }
   }
+
+  for (const path of STARTER_HISTORY) {
+    io.remove(join(root, path));
+  }
+
+  // The documentation index keeps its reference section only.
+  editFile('docs/seo-geo/README.md', (content) => content.replace(/\n+## History\n[\s\S]*$/, '\n'));
 }
 
 function renameDirectory(next) {

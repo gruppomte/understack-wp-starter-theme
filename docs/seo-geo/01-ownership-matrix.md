@@ -1,6 +1,6 @@
 # SEO/GEO Foundation — Phase 0: Ownership Matrix
 
-Who is responsible for each signal in each supported situation. "Theme" means the SEO/GEO foundation proposed in `02-implementation-plan.md`; "silent" means the theme emits nothing for that signal.
+Who is responsible for each signal in each supported situation. "Theme" means the SEO/GEO foundation in `app/Seo`; "silent" means the theme emits nothing for that signal.
 
 ## 1. Resolution rules
 
