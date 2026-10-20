@@ -39,7 +39,7 @@ Run them; do not assume. If a command is missing for a new kind of check, add it
 
 ## Performance
 
-- Load JavaScript on demand through the feature list in `src/js/app.js`; GSAP and Alpine are never imported globally.
+- Load JavaScript on demand through the feature list in `src/js/app.js`; GSAP, Alpine and Lenis are never imported globally. Lenis stays off for touch devices, reduced motion and the `no-smooth-scroll` body class; everything that scrolls must still work natively.
 - Keep the LCP element out of entrance animations; never hide content with CSS until JavaScript runs.
 - Use `components/image.twig` for attachments (`priority: true` for the LCP image, `loading: 'eager'` above the fold).
 - Prime caches for listings (`Support\Posts::prime`) and read terms with `post_terms()` in Twig.

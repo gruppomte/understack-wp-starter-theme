@@ -1,6 +1,8 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    /* Room above anchor and focus targets; src/js/modules/scroll.js reads it too. */
+    scroll-padding-top: 2rem;
     scrollbar-gutter: stable;
 
     @media (prefers-reduced-motion: reduce) {
@@ -14,10 +16,6 @@
 
   :focus-visible {
     @apply outline-2 outline-offset-2 outline-accent;
-  }
-
-  :target {
-    scroll-margin-top: 2rem;
   }
 
   h1,
@@ -46,5 +44,24 @@
 
   body:has(dialog[data-modal][open]) {
     overflow: hidden;
+  }
+
+  /* Smooth scrolling (Lenis, src/js/modules/scroll.js): its stylesheet, adapted. */
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+
+  html.lenis.lenis-stopped {
+    overflow: clip;
+  }
+
+  .lenis [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+
+  /* Iframes swallow wheel events: ignore them only while the page is moving, so embeds stay usable. */
+  html.lenis.lenis-scrolling iframe {
+    pointer-events: none;
   }
 }

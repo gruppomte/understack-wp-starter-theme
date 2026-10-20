@@ -6,7 +6,7 @@
  *   npm run setup -- --name "Client Name" --yes     non-interactive with defaults
  *
  * Options: --slug, --text-domain, --namespace, --woocommerce yes|no,
- *          --gsap yes|no, --alpine yes|no, --acf yes|no,
+ *          --gsap yes|no, --alpine yes|no, --smooth-scroll yes|no, --acf yes|no,
  *          --no-install, --no-build, --dry-run
  *
  * Re-running on an initialized theme renames it again. Third-party code
@@ -141,6 +141,10 @@ async function collectAnswers() {
     woocommerce: await askBoolean('WooCommerce', toBoolean(options.woocommerce, false)),
     gsap: await askBoolean('GSAP', toBoolean(options.gsap, true)),
     alpine: await askBoolean('Alpine.js', toBoolean(options.alpine, true)),
+    smoothScroll: await askBoolean(
+      'Smooth scrolling (Lenis)',
+      toBoolean(options['smooth-scroll'], true),
+    ),
     acf: await askBoolean('ACF Pro', toBoolean(options.acf, true)),
   };
   const install = await askBoolean('Install dependencies', toBoolean(options.install, true));
@@ -329,6 +333,21 @@ function applyFeatures(features) {
     }
   }
 
+  if (!features.smoothScroll) {
+    io.remove(join(root, 'src/js/modules/scroll.js'));
+    io.remove(join(root, 'tests/e2e/scroll.spec.js'));
+    editFile('src/js/app.js', (content) =>
+      content.replace(/\n\s*\{[^{}]*modules\/scroll\.js[^{}]*\},?/, ''),
+    );
+    editFile('src/css/base.css', (content) =>
+      content.replace(
+        /\n\s*\/\* Smooth scrolling \(Lenis[\s\S]*?pointer-events: none;\n\s*\}\n/,
+        '\n',
+      ),
+    );
+    editPackageJson((pkg) => delete pkg.dependencies?.lenis);
+  }
+
   if (!features.acf) {
     for (const path of [
       'includes/acf',
@@ -497,6 +516,7 @@ PHP namespace:  ${next.namespace}
 WooCommerce:    ${next.features.woocommerce ? 'yes' : 'no'}
 GSAP:           ${next.features.gsap ? 'yes' : 'no'}
 Alpine.js:      ${next.features.alpine ? 'yes' : 'no'}
+Smooth scroll:  ${next.features.smoothScroll ? 'yes' : 'no'}
 ACF Pro:        ${next.features.acf ? 'yes' : 'no'}
 `);
 
